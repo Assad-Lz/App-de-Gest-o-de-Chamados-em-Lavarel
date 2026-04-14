@@ -1,191 +1,41 @@
 <template>
-  <!--
-    App.vue – Componente raiz da aplicação.
-
-    Estrutura do layout:
-      - Sidebar de navegação lateral (fixo)
-      - Área de conteúdo principal (muda conforme a rota)
-      - Notificações toast globais
-  -->
-  <div id="wrapper">
-
-    <!-- ========== Sidebar de Navegação ========== -->
-    <div class="leftside-menu">
-
-      <!-- Logo do sistema -->
-      <a href="/" class="logo text-center logo-light">
-        <span class="logo-lg">
-          <img src="/assets/images/logo.png" alt="Logo" height="16"
-               onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
-          <span class="fw-bold text-white" style="font-size:18px; display:none">🎫 GestChamados</span>
-        </span>
-        <span class="logo-sm">
-          <span class="fw-bold text-white fs-4">GC</span>
-        </span>
-      </a>
-
-      <!-- Menu de navegação lateral -->
-      <div class="h-100" id="leftside-menu-container" data-simplebar>
-        <ul class="side-nav">
-
-          <li class="side-nav-title">Menu Principal</li>
-
-          <li class="side-nav-item">
-            <router-link to="/" class="side-nav-link">
-              <i class="uil-home-alt"></i>
-              <span>Dashboard</span>
-            </router-link>
-          </li>
-
-          <li class="side-nav-item">
-            <router-link to="/chamados" class="side-nav-link">
-              <i class="uil-ticket"></i>
-              <span>Chamados</span>
-            </router-link>
-          </li>
-
-          <li class="side-nav-item">
-            <router-link to="/categorias" class="side-nav-link">
-              <i class="uil-tag-alt"></i>
-              <span>Categorias</span>
-            </router-link>
-          </li>
-
-        </ul>
-
-        <!-- Botão de criar chamado rápido no rodapé da sidebar -->
-        <div class="clearfix"></div>
-      </div>
-    </div>
-    <!-- /Sidebar -->
-
-    <!-- ========== Área de Conteúdo Principal ========== -->
-    <div class="content-page">
-      <div class="content">
-
-        <!-- Topbar -->
-        <div class="navbar-custom">
-          <ul class="list-unstyled topbar-menu float-end mb-0">
-            <li class="dropdown notification-list">
-              <span class="badge bg-soft-primary text-primary rounded-pill me-3">
-                Sistema de Gestão de Chamados
-              </span>
-            </li>
-          </ul>
-          <button class="button-menu-mobile open-left" id="sidebar-toggle">
-            <i class="mdi mdi-menu"></i>
-          </button>
-          <div class="app-search dropdown d-none d-lg-block"></div>
-        </div>
-
-        <!-- Conteúdo dinâmico da rota atual -->
-        <div class="container-fluid">
-          <router-view v-slot="{ Component }">
-            <transition name="fade" mode="out-in">
-              <component :is="Component" />
-            </transition>
-          </router-view>
-        </div>
-
-      </div>
-
-      <!-- Footer -->
-      <footer class="footer">
-        <div class="container-fluid">
-          <div class="row">
-            <div class="col-12 text-center">
-              <span class="text-muted">
-                Gestão de Chamados &copy; {{ anoAtual }} – Desenvolvido com Laravel + Vue.js
-              </span>
+  <div class="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800">
+    <!-- Navbar Premium -->
+    <nav class="bg-white shadow-sm border-b border-slate-200 sticky top-0 z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16">
+          <div class="flex items-center gap-3">
+             <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl shadow-inner flex items-center justify-center text-white font-bold text-xl ring-2 ring-blue-100 ring-offset-2">
+              GC
             </div>
+            <span class="font-extrabold text-xl tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-slate-800 to-slate-600">Gestão de Chamados</span>
           </div>
-        </div>
-      </footer>
-    </div>
-    <!-- /Conteúdo -->
-
-    <!-- Toast de notificação global -->
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 99999">
-      <div v-if="toast.visible"
-           :class="['toast show align-items-center text-white border-0', `bg-${toast.tipo}`]"
-           role="alert"
-           aria-live="assertive">
-        <div class="d-flex">
-          <div class="toast-body">
-            <i :class="toast.tipo === 'success' ? 'uil-check-circle' : 'uil-exclamation-triangle'"></i>
-            {{ toast.mensagem }}
+          <div class="flex items-center space-x-2 md:space-x-8">
+            <router-link to="/" class="px-3 py-2 text-slate-600 hover:text-blue-600 font-semibold text-sm transition-all rounded-lg hover:bg-blue-50" active-class="text-blue-700 bg-blue-50/80 ring-1 ring-blue-100">Visão Geral</router-link>
+            <router-link to="/tickets" class="px-3 py-2 text-slate-600 hover:text-blue-600 font-semibold text-sm transition-all rounded-lg hover:bg-blue-50" active-class="text-blue-700 bg-blue-50/80 ring-1 ring-blue-100">Chamados</router-link>
+            <router-link to="/categories" class="px-3 py-2 text-slate-600 hover:text-blue-600 font-semibold text-sm transition-all rounded-lg hover:bg-blue-50" active-class="text-blue-700 bg-blue-50/80 ring-1 ring-blue-100">Categorias</router-link>
           </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto"
-                  @click="fecharToast"></button>
         </div>
       </div>
-    </div>
+    </nav>
 
+    <!-- Main Content com Transição Glassmorphism -->
+    <main class="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 h-full">
+      <router-view v-slot="{ Component }">
+        <transition name="fade" mode="out-in">
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </main>
   </div>
 </template>
 
-<script setup>
-/**
- * App.vue – Lógica do componente raiz.
- *
- * Fornece o estado global de notificações toast via provide/inject,
- * permitindo que qualquer componente filho exiba notificações.
- */
-import { reactive, computed, provide } from 'vue'
-
-// Estado reativo para o sistema de notificações
-const toast = reactive({
-  visible: false,
-  mensagem: '',
-  tipo: 'success', // 'success' | 'danger' | 'warning'
-})
-
-let toastTimer = null
-
-/**
- * Exibe uma notificação toast por 4 segundos.
- *
- * @param {string} mensagem - Texto da notificação
- * @param {string} tipo     - Tipo: 'success', 'danger', 'warning'
- */
-function mostrarToast(mensagem, tipo = 'success') {
-  // Cancela timer anterior se houver
-  if (toastTimer) clearTimeout(toastTimer)
-
-  toast.visible = true
-  toast.mensagem = mensagem
-  toast.tipo = tipo
-
-  // Auto-fecha após 4 segundos
-  toastTimer = setTimeout(() => {
-    toast.visible = false
-  }, 4000)
-}
-
-function fecharToast() {
-  toast.visible = false
-}
-
-// Disponibiliza o notificador para todos os componentes filhos
-provide('mostrarToast', mostrarToast)
-
-const anoAtual = computed(() => new Date().getFullYear())
-</script>
-
 <style>
-/* Transição suave ao trocar de página */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.25s ease;
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
-
-.fade-enter-from,
-.fade-leave-to {
+.fade-enter-from, .fade-leave-to {
   opacity: 0;
-}
-
-/* Estilo base da fonte para toda a aplicação */
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  transform: translateY(12px);
 }
 </style>

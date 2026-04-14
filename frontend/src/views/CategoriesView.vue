@@ -1,176 +1,57 @@
 <template>
-  <!-- CategoriesView.vue – CRUD de Categorias -->
-  <div>
-    <div class="row">
-      <div class="col-12">
-        <div class="page-title-box">
-          <div class="page-title-right">
-            <ol class="breadcrumb m-0">
-              <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
-              <li class="breadcrumb-item active">Categorias</li>
-            </ol>
-          </div>
-          <h4 class="page-title">
-            <i class="uil-tag-alt me-2"></i>Gestão de Categorias
-          </h4>
-        </div>
+  <div class="space-y-6 animate-in fade-in duration-500">
+    <div class="flex items-center justify-between">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight">Categorias</h1>
+        <p class="text-slate-500 mt-1">Sistemas de classificação para as filas de atendimento.</p>
       </div>
+      <button class="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2.5 rounded-xl font-medium shadow-md shadow-slate-200 transition-all hover:-translate-y-0.5">
+        Nova Divisão
+      </button>
     </div>
 
-    <div class="row">
-      <!-- Formulário de criação/edição -->
-      <div class="col-lg-4">
-        <div class="card">
-          <div class="card-header">
-            <h5 class="card-title mb-0">
-              <i :class="modoEdicao ? 'uil-edit' : 'uil-plus-circle'" class="me-2"></i>
-              {{ modoEdicao ? 'Editar Categoria' : 'Nova Categoria' }}
-            </h5>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      
+      <!-- Card Categoria 1 -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:shadow-xl transition-all duration-300 group flex flex-col justify-between hover:-translate-y-1 cursor-pointer ring-1 ring-transparent hover:ring-indigo-500/10">
+        <div>
+          <div class="flex justify-between items-start mb-4">
+            <span class="inline-flex p-3.5 rounded-xl bg-gradient-to-br from-indigo-50 to-blue-50 text-indigo-600 ring-1 ring-indigo-100 group-hover:scale-110 transition-transform">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+            </span>
+            <button class="text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 bg-red-50 p-1.5 rounded-lg">
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+            </button>
           </div>
-          <div class="card-body">
-            <form @submit.prevent="salvar">
-              <!-- Campo honeypot oculto -->
-              <input type="text" name="telefone_extra"
-                     style="display:none !important" tabindex="-1"
-                     autocomplete="off" v-model="form.telefone_extra" />
-
-              <div class="mb-3">
-                <label for="cat-nome" class="form-label fw-semibold">
-                  Nome da Categoria <span class="text-danger">*</span>
-                </label>
-                <input id="cat-nome"
-                       v-model="form.name"
-                       type="text"
-                       class="form-control"
-                       placeholder="Ex: Suporte Técnico"
-                       maxlength="255"
-                       required />
-              </div>
-
-              <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary flex-grow-1" :disabled="salvando">
-                  <span v-if="salvando" class="spinner-border spinner-border-sm me-1"></span>
-                  <i v-else :class="modoEdicao ? 'uil-save' : 'uil-plus'" class="me-1"></i>
-                  {{ modoEdicao ? 'Salvar' : 'Criar' }}
-                </button>
-                <button v-if="modoEdicao" type="button"
-                        class="btn btn-light" @click="cancelarEdicao">
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
+          <h3 class="text-lg font-bold text-slate-800">Hardware & Equipamentos</h3>
+          <p class="text-sm text-slate-500 mt-2 leading-relaxed">Danos físicos, troca de peças, formatação de computadores e reposição de periféricos em toda a empresa.</p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Abertos: 12</span>
+          <span class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-50 text-emerald-600 uppercase tracking-wider">Online</span>
         </div>
       </div>
 
-      <!-- Lista de categorias -->
-      <div class="col-lg-8">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Categorias Cadastradas</h5>
-            <span class="badge bg-primary rounded-pill">{{ categorias.length }}</span>
+      <!-- Card Categoria 2 -->
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:shadow-xl transition-all duration-300 group flex flex-col justify-between hover:-translate-y-1 cursor-pointer ring-1 ring-transparent hover:ring-rose-500/10">
+        <div>
+          <div class="flex justify-between items-start mb-4">
+            <span class="inline-flex p-3.5 rounded-xl bg-gradient-to-br from-rose-50 to-pink-50 text-rose-600 ring-1 ring-rose-100 group-hover:scale-110 transition-transform">
+              <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            </span>
+            <button class="text-slate-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 bg-red-50 p-1.5 rounded-lg">
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+            </button>
           </div>
-          <div class="card-body p-0">
-            <div v-if="carregando" class="text-center py-5">
-              <div class="spinner-border text-primary"></div>
-            </div>
-            <div v-else-if="categorias.length === 0" class="text-center py-5 text-muted">
-              <i class="uil-folder-open fs-1 d-block mb-2"></i>
-              Nenhuma categoria cadastrada ainda.
-            </div>
-            <ul v-else class="list-group list-group-flush">
-              <li v-for="cat in categorias" :key="cat.id"
-                  class="list-group-item d-flex align-items-center justify-content-between py-3">
-                <div>
-                  <span class="fw-semibold">{{ cat.name }}</span>
-                  <small class="d-block text-muted">ID: {{ cat.id }}</small>
-                </div>
-                <div>
-                  <button @click="iniciarEdicao(cat)"
-                          class="btn btn-sm btn-soft-primary me-1">
-                    <i class="uil-edit"></i>
-                  </button>
-                  <button @click="deletar(cat)"
-                          class="btn btn-sm btn-soft-danger">
-                    <i class="uil-trash-alt"></i>
-                  </button>
-                </div>
-              </li>
-            </ul>
-          </div>
+          <h3 class="text-lg font-bold text-slate-800">Acessos & Permissões</h3>
+          <p class="text-sm text-slate-500 mt-2 leading-relaxed">Liberação de catracas, reset de credenciais AD, e liberação de Firewall e VPN.</p>
+        </div>
+        <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
+          <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Abertos: 3</span>
+          <span class="px-2 py-0.5 rounded text-xs font-bold bg-emerald-50 text-emerald-600 uppercase tracking-wider">Online</span>
         </div>
       </div>
+
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, reactive, onMounted, inject } from 'vue'
-import categoryService from '@/services/categoryService'
-
-const mostrarToast = inject('mostrarToast')
-
-const categorias = ref([])
-const carregando = ref(false)
-const salvando = ref(false)
-const modoEdicao = ref(false)
-let categoriaEmEdicao = null
-
-const form = reactive({ name: '', telefone_extra: '' })
-
-async function carregar() {
-  carregando.value = true
-  try {
-    categorias.value = await categoryService.listar()
-  } catch (e) {
-    mostrarToast('Erro ao carregar categorias.', 'danger')
-  } finally {
-    carregando.value = false
-  }
-}
-
-function iniciarEdicao(cat) {
-  categoriaEmEdicao = cat
-  form.name = cat.name
-  modoEdicao.value = true
-}
-
-function cancelarEdicao() {
-  form.name = ''
-  form.telefone_extra = ''
-  modoEdicao.value = false
-  categoriaEmEdicao = null
-}
-
-async function salvar() {
-  salvando.value = true
-  try {
-    if (modoEdicao.value) {
-      await categoryService.atualizar(categoriaEmEdicao.id, { name: form.name })
-      mostrarToast('Categoria atualizada com sucesso!', 'success')
-    } else {
-      await categoryService.criar({ name: form.name, telefone_extra: form.telefone_extra })
-      mostrarToast('Categoria criada com sucesso!', 'success')
-    }
-    cancelarEdicao()
-    await carregar()
-  } catch (e) {
-    mostrarToast(e.message, 'danger')
-  } finally {
-    salvando.value = false
-  }
-}
-
-async function deletar(cat) {
-  if (!confirm(`Excluir a categoria "${cat.name}"?\n\nIsso não será possível se houver chamados vinculados.`)) return
-  try {
-    await categoryService.deletar(cat.id)
-    mostrarToast('Categoria excluída com sucesso!', 'success')
-    await carregar()
-  } catch (e) {
-    mostrarToast(e.message, 'danger')
-  }
-}
-
-onMounted(carregar)
-</script>
