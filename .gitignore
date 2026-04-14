@@ -1,0 +1,49 @@
+# ============================================================
+# .gitignore – Sistema de Gestão de Chamados
+# ============================================================
+
+# ------------------------------------------------------------
+# Design System: Exclui os HTMLs de demonstração do tema
+# (desnecessários – apenas os assets/ são usados no projeto)
+# ------------------------------------------------------------
+*.html
+!backend/resources/views/**/*.html
+
+# ------------------------------------------------------------
+# Backend – Laravel
+# ------------------------------------------------------------
+/backend/vendor/
+/backend/.env
+/backend/.env.backup
+/backend/storage/logs/*.log
+/backend/storage/framework/cache/data/
+/backend/storage/framework/sessions/
+/backend/storage/framework/testing/
+/backend/storage/framework/views/
+/backend/bootstrap/cache/*.php
+/backend/.phpunit.result.cache
+/backend/phpunit.xml.bak
+
+# ------------------------------------------------------------
+# Frontend – Vue.js / Node.js
+# ------------------------------------------------------------
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.env.local
+/frontend/.env.production
+
+# ------------------------------------------------------------
+# IDEs e editores
+# ------------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# ------------------------------------------------------------
+# Logs e arquivos temporários
+# ------------------------------------------------------------
+*.log
+*.cache

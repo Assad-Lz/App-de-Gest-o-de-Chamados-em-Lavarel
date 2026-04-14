@@ -1,0 +1,58 @@
+name: CI – Testes Automatizados
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  testes-backend:
+    name: PHPUnit – Testes Backend Laravel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, xml, pgsql, zip, bcmath, intl
+          coverage: none
+
+      - name: Instalar dependências do Composer
+        working-directory: ./backend
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Copiar arquivo .env para testes
+        working-directory: ./backend
+        run: cp .env.example .env && php artisan key:generate
+
+      - name: Executar testes PHPUnit
+        working-directory: ./backend
+        run: php artisan test --testsuite=Unit,Feature
+
+  testes-frontend:
+    name: Vue.js – Build do Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar dependências npm
+        working-directory: ./frontend
+        run: npm install
+
+      - name: Build do frontend (verifica erros de compilação)
+        working-directory: ./frontend
+        run: npm run build
