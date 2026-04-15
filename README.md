@@ -77,5 +77,11 @@ O projeto segue princípios de DDD e Arquitetura Limpa:
 9. **UI Glassmorphism:** Uso de desfoque de fundo (backdrop-blur) em modais e navegação para profundidade.
 10. **Mobile First:** Interface totalmente responsiva para tablets e smartphones.
 
+## 🤖 Desenvolvimento e Configurações de Agente
+
+Este projeto foi desenvolvido utilizando a **IDE Antigravity**, integrando capacidades avançadas de codificação assistida por IA.
+- **Agent Rules:** O repositório contém diretrizes específicas para agentes de IA (localizadas em `.agents/` ou `.cursorrules`), garantindo que a manutenção do código siga padrões rigorosos de arquitetura limpa e estética visual.
+- **Workflow Assistido:** Todo o processo de design, refatoração de UX e documentação OpenAPI foi orquestrado via Antigravity, maximizando a produtividade e qualidade do entregável.
+
 ---
 **Desenvolvido para o Teste Técnico - Desenvolvedor Sênior PHP/Laravel.**
