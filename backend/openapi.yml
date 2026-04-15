@@ -1,0 +1,95 @@
+openapi: 3.0.3
+info:
+  title: Cellar Vinhos - Ticket Management API
+  description: API para gestão de chamados técnicos internos da Cellar Vinhos.
+  version: 1.0.0
+  contact:
+    name: Suporte Técnico Cellar
+    email: ti@cellarvinhos.com
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Servidor Local de Desenvolvimento
+
+paths:
+  /tickets:
+    get:
+      summary: Listar todos os chamados
+      description: Retorna uma lista de chamados com suporte a filtros por status, categoria e busca textual.
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [aberto, em_progresso, resolvido]
+        - name: category_id
+          in: query
+          schema:
+            type: integer
+        - name: search
+          in: query
+          description: Busca por ID, Protocolo, Nome ou Email
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de chamados recuperada com sucesso
+    post:
+      summary: Criar um novo chamado
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, description, category_id, created_by]
+              properties:
+                title: { type: string }
+                description: { type: string }
+                category_id: { type: integer }
+                created_by: { type: string, description: "Email do autor" }
+                user_name: { type: string }
+                department: { type: string }
+      responses:
+        '201':
+          description: Chamado criado com sucesso
+
+  /tickets/{id}:
+    get:
+      summary: Obter detalhes de um chamado
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Detalhes do chamado
+
+  /tickets/{id}/comments:
+    post:
+      summary: Adicionar um comentário (Follow-up)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [comment, author_name, author_role]
+              properties:
+                comment: { type: string }
+                author_name: { type: string }
+                author_role: { type: string, enum: [analista, cliente] }
+      responses:
+        '201':
+          description: Comentário adicionado
+
+  /categories:
+    get:
+      summary: Listar categorias
+      responses:
+        '200':
+          description: Lista de categorias disponíveis

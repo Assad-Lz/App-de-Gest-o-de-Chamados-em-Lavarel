@@ -3,15 +3,37 @@
     
     <!-- Header Premium -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
-      <div>
-        <h1 class="text-3xl font-bold text-cellar-navy tracking-tight uppercase">
-          {{ userRole === 'analista' ? 'Gerenciamento de Chamados' : 'Meus Chamados' }}
-        </h1>
-        <p class="text-cellar-gray mt-1 font-medium text-sm">
-          {{ userRole === 'analista'
-            ? 'Visão geral de todos os chamados. Altere status e detalhes.'
-            : 'Acompanhe seus protocolos abertos e em atendimento.' }}
-        </p>
+      <div class="flex items-center gap-4 flex-1">
+        <div v-if="userRole === 'analista' && selectedTickets.length > 0" class="animate-in slide-in-from-left duration-300">
+           <button
+            @click="bulkDelete"
+            class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-all shadow-md font-bold text-xs uppercase"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+            Excluir ({{ selectedTickets.length }})
+          </button>
+        </div>
+        <div v-else class="flex flex-col sm:flex-row sm:items-center gap-4 flex-1">
+          <div>
+            <h1 class="text-3xl font-bold text-cellar-navy tracking-tight uppercase">
+              {{ userRole === 'analista' ? 'Gerenciamento' : 'Meus Chamados' }}
+            </h1>
+          </div>
+          
+          <!-- Lupa de Busca (Analista) -->
+          <div v-if="userRole === 'analista'" class="relative flex-1 max-w-md">
+            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </span>
+            <input
+              v-model="searchQuery"
+              @input="debouncedFetch"
+              type="text"
+              placeholder="Buscar por ID, Protocolo, Nome ou E-mail..."
+              class="block w-full pl-10 pr-3 py-2 border border-slate-200 rounded-pill bg-white text-sm focus:outline-none focus:ring-2 focus:ring-cellar-navy focus:border-transparent transition-all"
+            >
+          </div>
+        </div>
       </div>
       <button
         v-if="userRole === 'cliente'"
@@ -68,10 +90,19 @@
         <table class="min-w-full divide-y divide-slate-100">
           <thead class="bg-slate-50/60">
             <tr>
+              <th v-if="userRole === 'analista'" class="px-6 py-4 text-left">
+                <input
+                  type="checkbox"
+                  class="w-4 h-4 rounded text-cellar-navy border-slate-300 focus:ring-cellar-navy"
+                  :checked="isAllSelected"
+                  @change="toggleSelectAll"
+                >
+              </th>
               <th class="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-widest">Protocolo</th>
               <th class="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-widest">Assunto</th>
               <th class="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-widest">Status</th>
               <th class="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-widest">Autor(a)</th>
+              <th class="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-widest">Setor</th>
               <th class="px-6 py-4 text-left text-xs font-black text-slate-400 uppercase tracking-widest">Data</th>
               <th class="px-6 py-4 text-right text-xs font-black text-slate-400 uppercase tracking-widest">Ações</th>
             </tr>
@@ -83,6 +114,14 @@
               class="hover:bg-blue-50/30 transition-colors group cursor-pointer"
               @click="openDetail(ticket)"
             >
+              <td v-if="userRole === 'analista'" class="px-6 py-4" @click.stop>
+                <input
+                  type="checkbox"
+                  class="w-4 h-4 rounded text-cellar-navy border-slate-300 focus:ring-cellar-navy"
+                  :value="ticket.id"
+                  v-model="selectedTickets"
+                >
+              </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="font-mono font-black text-xs text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg">
                   {{ ticket.ticket_number || `#${ticket.id}` }}
@@ -100,10 +139,18 @@
               <td class="px-6 py-4 whitespace-nowrap">
                 <div class="flex items-center gap-2">
                   <div class="w-7 h-7 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-xs font-bold text-white shadow-sm">
-                    {{ (ticket.created_by?.[0] || 'S').toUpperCase() }}
+                    {{ (ticket.user_name?.[0] || 'S').toUpperCase() }}
                   </div>
-                  <span class="text-sm font-medium text-slate-600 truncate max-w-[120px]">{{ ticket.created_by || 'Sistema' }}</span>
+                  <div class="flex flex-col">
+                    <span class="text-sm font-bold text-slate-700 truncate max-w-[150px]">{{ ticket.user_name || 'Usuário' }}</span>
+                    <span class="text-[10px] text-slate-400 font-medium">{{ ticket.user_email || ticket.created_by }}</span>
+                  </div>
                 </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-black uppercase tracking-widest">
+                  {{ ticket.department || 'Geral' }}
+                </span>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-xs text-slate-400 font-medium">
                 {{ formatDate(ticket.created_at) }}
@@ -156,40 +203,64 @@
             <p class="text-slate-500 text-sm mt-1">Nossa equipe de T.I. responderá o mais rápido possível.</p>
           </div>
 
-          <form @submit.prevent="createTicket" class="space-y-5">
-            <div>
-              <label class="block text-sm font-bold text-slate-700 mb-2">Seu E-mail <span class="text-red-500">*</span></label>
-              <input
-                v-model="form.email"
-                required
-                type="email"
-                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-orange/10 focus:border-cellar-orange outline-none transition-all font-medium text-slate-800"
-                placeholder="exemplo@cellarvinhos.com"
-              >
+          <form @submit.prevent="createTicket" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Seu Nome <span class="text-red-500">*</span></label>
+                <input
+                  v-model="form.user_name"
+                  required
+                  type="text"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-orange/10 focus:border-cellar-orange outline-none transition-all font-medium text-slate-800"
+                  placeholder="Seu nome completo"
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Seu E-mail <span class="text-red-500">*</span></label>
+                <input
+                  v-model="form.user_email"
+                  required
+                  type="email"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-orange/10 focus:border-cellar-orange outline-none transition-all font-medium text-slate-800"
+                  placeholder="exemplo@cellarvinhos.com"
+                >
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Setor / Departamento <span class="text-red-500">*</span></label>
+                <input
+                  v-model="form.department"
+                  required
+                  type="text"
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-orange/10 focus:border-cellar-orange outline-none transition-all font-medium text-slate-800"
+                  placeholder="Ex: Comercial, Logística..."
+                >
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2">Categoria <span class="text-red-500">*</span></label>
+                <select
+                  v-model="form.category_id"
+                  required
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-orange/10 focus:border-cellar-orange outline-none transition-all font-medium text-slate-700 cursor-pointer"
+                >
+                  <option value="" disabled>Selecione...</option>
+                  <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
+                </select>
+              </div>
             </div>
 
             <div>
-              <label class="block text-sm font-bold text-slate-700 mb-2">Assunto / Título do Problema <span class="text-red-500">*</span></label>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Assunto / Título <span class="text-red-500">*</span></label>
               <input
                 v-model="form.title"
                 required
                 type="text"
                 maxlength="255"
                 class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-orange/10 focus:border-cellar-orange outline-none transition-all font-medium text-slate-800"
-                placeholder="Ex: Computador não liga, Impressora sem toner..."
+                placeholder="Ex: Teclado quebrado, Acesso ao sistema negado..."
               >
-            </div>
-
-            <div>
-              <label class="block text-sm font-bold text-slate-700 mb-2">Categoria do Problema <span class="text-red-500">*</span></label>
-              <select
-                v-model="form.category_id"
-                required
-                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-orange/10 focus:border-cellar-orange outline-none transition-all font-medium text-slate-700 cursor-pointer"
-              >
-                <option value="" disabled>Selecione a categoria...</option>
-                <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-              </select>
             </div>
 
             <div>
@@ -233,7 +304,7 @@
     <!-- ===================== MODAL EDITAR CHAMADO (Analista) ===================== -->
     <Transition name="modal">
       <div v-if="showEditModal && selectedTicket" class="fixed inset-0 bg-cellar-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-round w-full max-w-2xl shadow-2xl p-8 relative">
+        <div class="bg-white rounded-round w-full max-w-2xl shadow-2xl p-8 relative max-h-[90vh] overflow-y-auto custom-scrollbar">
           <button @click="closeEdit" class="absolute top-5 right-5 text-slate-400 hover:text-cellar-dark bg-slate-100 hover:bg-slate-200 p-2 rounded-full transition">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
           </button>
@@ -299,7 +370,7 @@
     <!-- ===================== MODAL DETALHE CHAMADO (Cliente / Leitura) ===================== -->
     <Transition name="modal">
       <div v-if="showDetailModal && selectedTicket" class="fixed inset-0 bg-cellar-navy/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-round w-full max-w-2xl shadow-2xl relative overflow-hidden">
+        <div class="bg-white rounded-round w-full max-w-2xl shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
 
           <!-- Header colorido por status -->
           <div :class="statusHeaderClass(selectedTicket.status)" class="px-8 py-6 text-white relative overflow-hidden">
@@ -319,7 +390,7 @@
             </div>
           </div>
 
-          <div class="p-8 space-y-6">
+          <div class="p-8 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
             <!-- Status atual -->
             <div class="flex items-center gap-3">
               <span class="text-sm font-bold text-slate-500">Status atual:</span>
@@ -366,7 +437,56 @@
               </div>
             </div>
 
-            <div class="flex justify-end gap-3 pt-2 border-t border-slate-100">
+            <!-- Follow-up (Comunicação) -->
+            <div class="space-y-4 pt-6 mt-6 border-t border-slate-100">
+              <h4 class="text-sm font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
+                Histórico de Follow-ups
+              </h4>
+
+              <div v-if="selectedTicket.comments?.length" class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                <div 
+                  v-for="comment in selectedTicket.comments" 
+                  :key="comment.id"
+                  class="p-4 rounded-round border border-slate-100 transition-all hover:border-slate-200 shadow-sm"
+                  :class="comment.author_role === 'analista' ? 'bg-cellar-navy/5 ml-4' : 'bg-cellar-orange/5 mr-4'"
+                >
+                  <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-black uppercase tracking-wider" :class="comment.author_role === 'analista' ? 'text-cellar-navy' : 'text-cellar-orange'">
+                      {{ comment.author_name }} · {{ comment.author_role === 'analista' ? 'Suporte' : 'Requisitante' }}
+                    </span>
+                    <span class="text-[10px] text-slate-400 font-bold">{{ formatDate(comment.created_at) }}</span>
+                  </div>
+                  <p class="text-sm text-slate-700 font-medium leading-relaxed">{{ comment.comment }}</p>
+                </div>
+              </div>
+              <div v-else class="text-center py-8 bg-slate-50 rounded-round border border-dashed border-slate-200">
+                <p class="text-xs text-slate-400 font-black uppercase tracking-widest">Nenhuma mensagem registrada</p>
+              </div>
+
+              <!-- Novo Comentário -->
+              <div class="mt-6">
+                <div class="flex flex-col gap-2">
+                  <textarea
+                    v-model="newComment"
+                    rows="2"
+                    placeholder="Escreva uma mensagem ou follow-up aqui..."
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-navy/10 focus:border-cellar-navy outline-none transition-all font-medium text-sm text-slate-800 resize-none"
+                  ></textarea>
+                  <div class="flex justify-end">
+                    <button 
+                      @click="addComment"
+                      :disabled="!newComment.trim() || submittingComment"
+                      class="px-5 py-2 bg-cellar-navy text-white text-xs font-black uppercase tracking-widest rounded-pill hover:bg-cellar-navyMid transition-all disabled:opacity-50"
+                    >
+                      {{ submittingComment ? 'Enviando...' : 'Enviar Mensagem' }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
               <button
                 v-if="userRole === 'analista'"
                 @click="showDetailModal = false; openEditModal(selectedTicket)"
@@ -394,8 +514,8 @@ import { useRouter } from 'vue-router'
 
 const toast = useToast()
 const router = useRouter()
-const userRole = localStorage.getItem('userRole')
-const userEmail = localStorage.getItem('userEmail')
+const userRole = ref(localStorage.getItem('userRole'))
+const userEmail = ref(localStorage.getItem('userEmail'))
 
 const tickets = ref([])
 const categories = ref([])
@@ -405,13 +525,19 @@ const showEditModal = ref(false)
 const showDetailModal = ref(false)
 const submitting = ref(false)
 const selectedTicket = ref(null)
+const selectedTickets = ref([])
 const activeFilter = ref('todos')
+const searchQuery = ref('')
+const newComment = ref('')
+const submittingComment = ref(false)
 
 const form = ref({
   title: '',
   description: '',
   category_id: '',
-  email: userEmail || ''
+  user_name: '',
+  user_email: userEmail || '',
+  department: ''
 })
 
 const API_URL = 'http://localhost:8000/api/v1'
@@ -436,8 +562,8 @@ const isStatusAfter = (current, step) => statusOrder.indexOf(current) > statusOr
 
 // ── Dados filtrados ────────────────────────────────────────
 const myTickets = computed(() => {
-  if (userRole === 'analista') return tickets.value
-  return tickets.value.filter(t => t.created_by === userEmail)
+  if (userRole.value === 'analista') return tickets.value
+  return tickets.value.filter(t => t.created_by === userEmail.value)
 })
 
 const filteredTickets = computed(() => {
@@ -453,10 +579,30 @@ const countByStatus = (filter) => {
 // ── Helpers ────────────────────────────────────────────────
 const formatDate = (dateStr) => {
   if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleString('pt-BR', {
+  const date = new Date(dateStr)
+  const now = new Date()
+  const diffInSeconds = Math.floor((now - date) / 1000)
+
+  if (diffInSeconds < 60) return 'agora mesmo'
+  if (diffInSeconds < 3600) return `há ${Math.floor(diffInSeconds / 60)} min`
+  if (diffInSeconds < 86400) return `há ${Math.floor(diffInSeconds / 3600)}h`
+  
+  return date.toLocaleString('pt-BR', {
     day: '2-digit', month: '2-digit', year: 'numeric',
     hour: '2-digit', minute: '2-digit'
   })
+}
+
+const isAllSelected = computed(() => {
+  return filteredTickets.value.length > 0 && selectedTickets.value.length === filteredTickets.value.length
+})
+
+const toggleSelectAll = () => {
+  if (isAllSelected.value) {
+    selectedTickets.value = []
+  } else {
+    selectedTickets.value = filteredTickets.value.map(t => t.id)
+  }
 }
 
 const getCategoryName = (categoryId) => {
@@ -486,13 +632,23 @@ const fetchCategories = async () => {
 const fetchTickets = async () => {
   loading.value = true
   try {
-    const { data } = await axios.get(`${API_URL}/tickets`)
+    const params = {}
+    if (activeFilter.value !== 'todos') params.status = activeFilter.value
+    if (searchQuery.value) params.search = searchQuery.value
+
+    const { data } = await axios.get(`${API_URL}/tickets`, { params })
     tickets.value = data.data
   } catch {
-    toast.error('Falha ao carregar chamados.')
+    toast.error('Erro ao listar chamados. Tente novamente.')
   } finally {
     loading.value = false
   }
+}
+
+let debounceTimer = null
+const debouncedFetch = () => {
+  clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(fetchTickets, 500)
 }
 
 const createTicket = async () => {
@@ -505,11 +661,11 @@ const createTicket = async () => {
     await axios.post(`${API_URL}/tickets`, {
       ...form.value,
       category_id: parseInt(form.value.category_id),
-      created_by: form.value.email || userEmail
+      created_by: form.value.user_email || userEmail.value
     })
     toast.success('Chamado aberto com sucesso! Nossa equipe irá analisar em breve. 🎉')
     showCreateModal.value = false
-    form.value = { title: '', description: '', category_id: '', email: userEmail || '' }
+    form.value = { title: '', description: '', category_id: '', user_name: '', user_email: userEmail || '', department: '' }
     await fetchTickets()
   } catch (error) {
     const msg = error.response?.data?.message || 'Erro ao abrir chamado. Tente novamente.'
@@ -552,6 +708,42 @@ const deleteTicket = async (id) => {
   }
 }
 
+const addComment = async () => {
+  if (!newComment.value.trim()) return
+  submittingComment.value = true
+  try {
+    await axios.post(`${API_URL}/tickets/${selectedTicket.value.id}/comments`, {
+      comment: newComment.value,
+      author_name: userRole.value === 'analista' ? 'Suporte' : (localStorage.getItem('userEmail')?.split('@')[0] || 'Cliente'),
+      author_role: userRole.value
+    })
+    
+    // Recarregar ticket para ver novo comentário
+    const { data } = await axios.get(`${API_URL}/tickets/${selectedTicket.value.id}`)
+    selectedTicket.value = data.data
+    newComment.value = ''
+    toast.success('Mensagem enviada!')
+  } catch (error) {
+    toast.error('Erro ao enviar mensagem.')
+  } finally {
+    submittingComment.value = false
+  }
+}
+
+const bulkDelete = async () => {
+  if (!confirm(`Tem certeza que deseja excluir ${selectedTickets.value.length} chamados permanentemente?`)) return
+
+  try {
+    await axios.post(`${API_URL}/tickets/bulk-delete`, { ids: selectedTickets.value })
+    toast.success('Chamados excluídos com sucesso!')
+    selectedTickets.value = []
+    await fetchTickets()
+  } catch (error) {
+    const msg = error.response?.data?.message || 'Erro ao excluir chamados.'
+    toast.error(msg)
+  }
+}
+
 // ── Modals ─────────────────────────────────────────────────
 const openDetail = (ticket) => {
   selectedTicket.value = JSON.parse(JSON.stringify(ticket))
@@ -572,7 +764,7 @@ const closeEdit = () => {
 
 // ── Lifecycle ──────────────────────────────────────────────
 onMounted(() => {
-  if (!userEmail) {
+  if (!userEmail.value) {
     router.push('/login')
     return
   }

@@ -50,6 +50,7 @@ class TicketController
         $filtros = array_filter([
             'status'      => $request->query('status'),
             'category_id' => $request->query('category_id'),
+            'search'      => $request->query('search'),
         ]);
 
         $tickets = $this->listUseCase->execute($filtros);
@@ -87,6 +88,9 @@ class TicketController
                 description: $request->validated('description'),
                 categoryId: (int) $request->validated('category_id'),
                 createdBy: $request->validated('created_by') ?? $request->ip() ?? 'sistema',
+                userName: $request->validated('user_name'),
+                userEmail: $request->validated('user_email'),
+                department: $request->validated('department'),
             );
 
             $ticket = $this->createUseCase->execute($dto);
@@ -152,6 +156,37 @@ class TicketController
             return response()->json(
                 ['message' => $e->getMessage()],
                 Response::HTTP_NOT_FOUND
+            );
+        }
+    }
+
+    /**
+     * DELETE /api/tickets/bulk-delete
+     * Remove múltiplos chamados de uma vez.
+     */
+    public function bulkDestroy(Request $request): JsonResponse
+    {
+        $ids = $request->input('ids');
+
+        if (!is_array($ids) || empty($ids)) {
+            return response()->json(
+                ['message' => 'Nenhum ID de chamado fornecido para exclusão.'],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
+        try {
+            $deletedCount = $this->ticketRepository->deleteMultiple($ids);
+
+            return response()->json([
+                'message' => "{$deletedCount} chamados removidos com sucesso.",
+                'deleted_count' => $deletedCount
+            ], Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+            return response()->json(
+                ['message' => 'Erro ao processar exclusão em massa.'],
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
     }

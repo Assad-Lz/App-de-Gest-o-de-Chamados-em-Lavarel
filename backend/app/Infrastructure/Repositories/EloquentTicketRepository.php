@@ -19,7 +19,7 @@ class EloquentTicketRepository implements TicketRepositoryInterface
     public function findAll(array $filtros = []): array
     {
         $query = TicketModel::query()
-            ->with('category')
+            ->with(['category', 'comments'])
             ->orderBy('created_at', 'desc');
 
         if (!empty($filtros['status'])) {
@@ -30,6 +30,17 @@ class EloquentTicketRepository implements TicketRepositoryInterface
             $query->where('category_id', (int) $filtros['category_id']);
         }
 
+        if (!empty($filtros['search'])) {
+            $search = $filtros['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('ticket_number', 'ilike', "%{$search}%")
+                  ->orWhere('title', 'ilike', "%{$search}%")
+                  ->orWhere('user_name', 'ilike', "%{$search}%")
+                  ->orWhere('user_email', 'ilike', "%{$search}%")
+                  ->orWhere('id', 'like', "%{$search}%");
+            });
+        }
+
         return $query->get()
             ->map(fn(TicketModel $model) => $this->toDomain($model))
             ->toArray();
@@ -37,7 +48,7 @@ class EloquentTicketRepository implements TicketRepositoryInterface
 
     public function findById(int $id): ?Ticket
     {
-        $model = TicketModel::find($id);
+        $model = TicketModel::with(['category', 'comments'])->find($id);
 
         return $model ? $this->toDomain($model) : null;
     }
@@ -50,6 +61,9 @@ class EloquentTicketRepository implements TicketRepositoryInterface
             'status'      => $ticket->getStatus(),
             'category_id' => $ticket->getCategoryId(),
             'created_by'  => $ticket->getCreatedBy(),
+            'user_name'    => $ticket->getUserName(),
+            'user_email'   => $ticket->getUserEmail(),
+            'department'   => $ticket->getDepartment(),
         ]);
 
         return $this->toDomain($model);
@@ -74,6 +88,11 @@ class EloquentTicketRepository implements TicketRepositoryInterface
         return (bool) TicketModel::destroy($id);
     }
 
+    public function deleteMultiple(array $ids): int
+    {
+        return TicketModel::destroy($ids);
+    }
+
     private function toDomain(TicketModel $model): Ticket
     {
         return new Ticket(
@@ -83,6 +102,9 @@ class EloquentTicketRepository implements TicketRepositoryInterface
             status: $model->status,
             categoryId: $model->category_id,
             createdBy: $model->created_by,
+            userName: $model->user_name,
+            userEmail: $model->user_email,
+            department: $model->department,
             ticketNumber: $model->ticket_number,
             createdAt: $model->created_at
                 ? \DateTimeImmutable::createFromMutable($model->created_at->toDateTime())
@@ -90,6 +112,15 @@ class EloquentTicketRepository implements TicketRepositoryInterface
             updatedAt: $model->updated_at
                 ? \DateTimeImmutable::createFromMutable($model->updated_at->toDateTime())
                 : null,
+            comments: $model->relationLoaded('comments') ? $model->comments->map(function ($c) {
+                return [
+                    'id' => $c->id,
+                    'comment' => $c->comment,
+                    'author_name' => $c->author_name,
+                    'author_role' => $c->author_role,
+                    'created_at' => $c->created_at->toIso8601String(),
+                ];
+            })->toArray() : [],
         );
     }
 }

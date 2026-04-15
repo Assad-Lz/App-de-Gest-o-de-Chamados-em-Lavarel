@@ -34,9 +34,13 @@ final class Ticket
         private string $status,
         private int $categoryId,
         private readonly string $createdBy,
+        private readonly ?string $userName = null,
+        private readonly ?string $userEmail = null,
+        private readonly ?string $department = null,
         private readonly ?string $ticketNumber = null,
         private readonly ?\DateTimeImmutable $createdAt = null,
         private ?\DateTimeImmutable $updatedAt = null,
+        private readonly array $comments = [],
     ) {
         $this->validarTitulo($title);
         $this->validarStatus($status);
@@ -47,6 +51,9 @@ final class Ticket
         string $description,
         int $categoryId,
         string $createdBy,
+        ?string $userName = null,
+        ?string $userEmail = null,
+        ?string $department = null,
     ): self {
         return new self(
             id: null,
@@ -55,6 +62,10 @@ final class Ticket
             status: self::STATUS_ABERTO,
             categoryId: $categoryId,
             createdBy: $createdBy,
+            userName: $userName,
+            userEmail: $userEmail,
+            department: $department,
+            comments: [],
         );
     }
 
@@ -101,6 +112,26 @@ final class Ticket
     public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updatedAt;
+    }
+
+    public function getUserName(): ?string
+    {
+        return $this->userName;
+    }
+
+    public function getUserEmail(): ?string
+    {
+        return $this->userEmail;
+    }
+
+    public function getDepartment(): ?string
+    {
+        return $this->department;
+    }
+
+    public function getComments(): array
+    {
+        return $this->comments;
     }
 
     public function alterarStatus(string $novoStatus): void

@@ -4,12 +4,14 @@
       <div class="cellar-container">
         <div class="flex justify-between h-20 items-center">
           <div class="flex items-center gap-4">
-             <img src="/assets/images/logo_nova.jpeg" alt="Cellar Vinhos Logo" class="h-12 w-auto rounded-full border-2 border-white/20">
+             <router-link to="/" class="hover:scale-105 transition-transform">
+               <img src="/assets/images/logo_nova.jpeg" alt="Cellar Vinhos Logo" class="h-12 w-auto rounded-full border-2 border-white/20">
+             </router-link>
           </div>
           <div class="flex items-center space-x-2 md:space-x-8">
             <router-link to="/" class="px-3 py-2 text-white/80 hover:text-white font-medium text-sm transition-all rounded-pill hover:bg-white/10 uppercase tracking-wider" active-class="text-white bg-cellar-wine font-bold">Painel</router-link>
             <router-link to="/chamados" class="px-3 py-2 text-white/80 hover:text-white font-medium text-sm transition-all rounded-pill hover:bg-white/10 uppercase tracking-wider" active-class="text-white bg-cellar-wine font-bold">Chamados</router-link>
-            <router-link to="/categorias" class="px-3 py-2 text-white/80 hover:text-white font-medium text-sm transition-all rounded-pill hover:bg-white/10 uppercase tracking-wider" active-class="text-white bg-cellar-wine font-bold">Categorias</router-link>
+            <router-link v-if="userRole === 'analista'" to="/categorias" class="px-3 py-2 text-white/80 hover:text-white font-medium text-sm transition-all rounded-pill hover:bg-white/10 uppercase tracking-wider" active-class="text-white bg-cellar-wine font-bold">Categorias</router-link>
             <button @click="logout" class="px-4 py-2 text-white bg-cellar-orange/90 hover:bg-cellar-orange font-bold text-sm transition-all rounded-pill ml-4 uppercase tracking-wider">Sair</button>
           </div>
         </div>
@@ -28,17 +30,28 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
 
 const isLoginRoute = computed(() => route.path === '/login')
+const userRole = ref(localStorage.getItem('userRole'))
+
+// Sincroniza o papel do usuário quando a rota muda (útil após login)
+watch(() => route.path, () => {
+  userRole.value = localStorage.getItem('userRole')
+})
+
+onMounted(() => {
+  userRole.value = localStorage.getItem('userRole')
+})
 
 const logout = () => {
   localStorage.removeItem('userEmail')
   localStorage.removeItem('userRole')
+  userRole.value = null
   router.push('/login')
 }
 </script>

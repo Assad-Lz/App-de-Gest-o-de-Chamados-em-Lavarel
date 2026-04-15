@@ -32,9 +32,10 @@ class CategoryResource extends JsonResource
 
         return [
             'id'         => $category->getId(),
-            'name'       => $category->getName(),
-            'created_by' => $category->getCreatedBy(),
-            'created_at' => $category->getCreatedAt()?->format('Y-m-d\TH:i:s\Z'),
+            'name'          => $category->getName(),
+            'created_by'    => $category->getCreatedBy(),
+            'tickets_count' => $category->getTicketsCount(),
+            'created_at'    => $category->getCreatedAt()?->format('Y-m-d\TH:i:s\Z'),
         ];
     }
 }

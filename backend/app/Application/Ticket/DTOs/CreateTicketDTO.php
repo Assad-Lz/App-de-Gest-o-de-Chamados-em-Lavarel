@@ -23,5 +23,8 @@ final readonly class CreateTicketDTO
         public readonly string $description,
         public readonly int $categoryId,
         public readonly string $createdBy,
+        public readonly ?string $userName = null,
+        public readonly ?string $userEmail = null,
+        public readonly ?string $department = null,
     ) {}
 }

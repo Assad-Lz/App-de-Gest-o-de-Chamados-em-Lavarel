@@ -9,6 +9,7 @@
 use App\Presentation\Http\Controllers\CategoryController;
 use App\Presentation\Http\Controllers\TicketController;
 use App\Presentation\Http\Controllers\HoneypotController;
+use App\Presentation\Http\Controllers\TicketCommentController;
 use Illuminate\Support\Facades\Route;
 
 // -------------------------------------------------------
@@ -31,6 +32,8 @@ Route::prefix('v1')->middleware(['security.headers', 'xss.protection'])->group(f
         Route::get('/{id}', [TicketController::class, 'show']);        // Buscar chamado individual
         Route::put('/{id}', [TicketController::class, 'update']);      // Atualizar chamado
         Route::delete('/{id}', [TicketController::class, 'destroy']);  // Deletar chamado (só TI)
+        Route::post('/bulk-delete', [TicketController::class, 'bulkDestroy']); // Excluir múltiplos
+        Route::post('/{ticket}/comments', [TicketCommentController::class, 'store']); // Novo Follow Up
     });
 });
 
@@ -52,6 +55,8 @@ Route::middleware(['security.headers', 'xss.protection'])->group(function () {
         Route::get('/{id}', [TicketController::class, 'show']);
         Route::put('/{id}', [TicketController::class, 'update']);
         Route::delete('/{id}', [TicketController::class, 'destroy']);
+        Route::post('/bulk-delete', [TicketController::class, 'bulkDestroy']);
+        Route::post('/{ticket}/comments', [TicketCommentController::class, 'store']);
     });
 });
 

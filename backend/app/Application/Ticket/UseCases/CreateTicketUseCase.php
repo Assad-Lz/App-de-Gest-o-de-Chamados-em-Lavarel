@@ -51,6 +51,9 @@ final class CreateTicketUseCase
             description: $dto->description,
             categoryId: $dto->categoryId,
             createdBy: $dto->createdBy,
+            userName: $dto->userName,
+            userEmail: $dto->userEmail,
+            department: $dto->department,
         );
 
         return $this->ticketRepository->save($ticket);

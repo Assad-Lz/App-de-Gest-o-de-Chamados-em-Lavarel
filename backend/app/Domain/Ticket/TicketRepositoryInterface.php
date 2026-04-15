@@ -62,4 +62,12 @@ interface TicketRepositoryInterface
      * @return bool True se removido com sucesso
      */
     public function delete(int $id): bool;
+
+    /**
+     * Remove múltiplos tickets pelos seus IDs.
+     *
+     * @param  int[]  $ids  Lista de identificadores
+     * @return int Quantidade de registros removidos
+     */
+    public function deleteMultiple(array $ids): int;
 }

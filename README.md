@@ -1,76 +1,64 @@
-# 🎫 Sistema de Gestão de Chamados
+# 🍷 Cellar Vinhos - Gestão de Chamados (TI)
 
-> 🧪 Teste Técnico – Desenvolvedor(a) Sênior PHP/Laravel
+Sistema premium de gestão de chamados desenvolvido para a **Cellar Vinhos**, focado em eficiência operacional, comunicação clara e design de alta fidelidade.
 
-Este projeto foi desenvolvido como parte de um teste técnico para avaliar conhecimentos em desenvolvimento full stack, com Laravel 11 no backend e Vue.js 3 no frontend (SPA). 
+## 🚀 Funcionalidades Principais
 
-Trata-se de uma aplicação de **Gestão de Chamados** com funcionalidades completas de CRUD, filtragem e uma interface premium baseada na identidade da **Cellar Vinhos**. O sistema segue princípios essenciais como **Clean Architecture**, **SOLID** e foi desenvolvido em conformidade com o formato REST.
+### Para o Analista (T.I)
+- **Dashboard Estratégico:** KPIs em tempo real (Total, Aguardando, Em Progresso, Resolvidos) com gráficos de eficiência.
+- **Busca Avançada (Lupa):** Encontre qualquer ticket instantaneamente por ID, Protocolo (TK-2026...), Nome do Requisitante ou E-mail.
+- **Gestão de Categorias:** Controle total sobre as categorias de atendimento.
+- **Ações em Massa:** Exclusão múltipla de chamados para limpeza de base.
+- **Sistema de Follow-up:** Chat interno dentro de cada chamado para comunicação direta com o cliente.
 
----
+### Para o Cliente (Colaborador)
+- **Interface Intuitiva:** Abertura simplificada de chamados com campos de Setor e Identificação.
+- **Acompanhamento de Status:** Visualização clara do ciclo de vida do chamado.
+- **Histórico de Comunicação:** Veja cronologicamente todas as interações do suporte no seu chamado.
 
-## 🎯 Backend – Laravel (API)
+## 🛠️ Stack Tecnológica
 
-A API do projeto foi construída para atender rigorosamente às necessidades da aplicação.
+- **Backend:** Laravel 11 + Clean Architecture + PostgreSQL (Supabase).
+- **Frontend:** Vue.js 3 + Vite + Tailwind CSS (Aesthetics v4).
+- **Icons & Design:** Lucide Icons + HeroIcons + Custom Glassmorphism UI.
+- **Docs:** OpenAPI/Swagger (disponível em `/backend/openapi.yml`).
 
-### Funcionalidades
-- **Cadastro de Categorias**
-  - Campos: `id`, `name`, `created_at`, `created_by`
-- **Cadastro de Chamados**
-  - Campos: `id`, `title`, `description`, `status` (`aberto`, `em progresso`, `resolvido`), `category_id`, `created_at`, `created_by`, `updated_at`
+## 📦 Instalação e Execução
 
-### 📌 Regras de Negócio Garantidas Integralmente
-- ✔️ O chamado deve obrigatoriamente ter uma categoria associada.
-- ✔️ O status padrão ao criar sempre será definido como `aberto`.
-- ✔️ A deleção de categorias não é permitida se houver chamados associados a ela.
-- ✔️ Arquitetura baseada em Clean Architecture e SOLID (uso de Repositories, UseCases e DTOs, blindando regras de negócio).
-- ✔️ Formulário validado com adequação de Form Requests.
-- ✔️ Autenticação (simulada restrita a nível de localStorage para `cliente@teste.com` ou `analista@teste.com` na porta do sistema de acordo com as permissões). Apenas de T.I excluem.
+### 1. Backend
+```bash
+cd backend
+composer install
+cp .env.example .env
+php artisan migrate
+php artisan serve
+```
 
-### 🧩 Endpoints API (REST)
-| Método   | Rota                           | Descrição                    |
-|----------|--------------------------------|------------------------------|
-| GET      | `/api/categories`              | Listar categorias            |
-| POST     | `/api/categories`              | Criar categoria              |
-| PUT      | `/api/categories/{id}`         | Atualizar categoria          |
-| DELETE   | `/api/categories/{id}`         | Deletar categoria            |
-| GET      | `/api/tickets`                 | Listar chamados              |
-| POST     | `/api/tickets`                 | Criar chamado                |
-| PUT      | `/api/tickets/{id}`            | Atualizar chamado            |
-| DELETE   | `/api/tickets/{id}`            | Deletar chamado              |
+### 2. Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
----
+## 📐 Decisões de Arquitetura (Clean Architecture)
+O projeto segue princípios de DDD e Arquitetura Limpa:
+- **Domain:** Entidades puras e lógica de negócio central.
+- **Application:** Casos de uso (UseCases) que orquestram o fluxo de dados.
+- **Infrastructure:** Repositórios Eloquent e integrações externas.
+- **Presentation:** Controladores de API e Resources para entrega de dados.
 
-## 🎨 Frontend (Vue.js 3 + Vite)
-
-A aplicação foi entregue no formato SPA (Single Page Application).
-
-### Funcionalidades
-- **Autenticação Simulada:** Acesso via perfis Cliente (somente leitura global e criação) e TI/Analista (leitura, acompanhamento de fluxos, edição e exclusão).
-- **Listagem e Filtros Reativos:** Filtros para localizar chamados por status de maneira rápida sem recarregar a visualização original.
-- **Formulários e Modais:** Toda iteração para edição e criação de chamados ocorre em Modais bem fluidos e formatados.
-- **Identidade da Marca (Design System):** A interface foi toda recriada baseando-se na **Tipografia Montserrat**, na **Paleta Integrada (*Azul Dark, Laranja Vibrante, Vinho*)**, mantendo todo o Design System solicitado. O tema HTML base do Bootstrap foi incluído como solicitado para estruturação estática inicial, contudo o projeto inteiro Vue usa Tailwindcss V4.
-
----
-
-## 🧪 Testes
-
-Testes abrangentes com **PHPUnit**:
-- 1+ **Testes Unitários**: Validador de entidades e regras de banco puras (ex: `TicketEntityTest.php`).
-- 1+ **Testes de Integração**: Testando endpoints completos em conjunto do banco (ex: `CategoryApiTest.php`).
-- Total independência sem impacto de interface, TDD puro.
-
----
-
-## 🛠️ Tecnologias Utilizadas
-- **Backend:** Laravel 11 (PHP 8.3), Migrations, Seeders, Eloquent ORM.
-- **Frontend:** Vue.js 3, Vite, Tailwind CSS V4, Pinia, Vue Router.
-- **Testes:** PHPUnit.
-- **Banco de Dados:** PostgreSQL hospedado (Supabase).
-- **Controle de Versão:** Git + repositório GitHub.
+## 📈 Melhorias UX/UI Implementadas
+1. **Scrolling de Modais:** Modais inteligentes que se adaptam à altura da tela sem "grudar" nas bordas.
+2. **Skeleton Loaders:** Feedback visual durante o carregamento de dados (fim do "flash" branco).
+3. **Relative Time (FormatDate):** Datas amigáveis como "há 2 horas" para maior agilidade na leitura.
+4. **Empty States Ilustrados:** Mensagens claras quando não há dados para exibir.
+5. **Interactive Dashboard:** Cards com efeitos de escala, sombras dinâmicas e transições de cor no hover.
+6. **Filtros Reativos:** Mudança de status instantânea com contador de itens em cada filtro.
+7. **Cross-Origin Resiliency:** Configuração de CORS expandida para suportar múltiplos ambientes de dev.
+8. **Feedback de Operação:** Toasts de sucesso/erro integrados em todas as ações críticas.
+9. **UI Glassmorphism:** Uso de desfoque de fundo (backdrop-blur) em modais e navegação para profundidade.
+10. **Mobile First:** Interface totalmente responsiva para tablets e smartphones.
 
 ---
-
-## 🤖 Auxílio com IA
-Este projeto foi desenvolvido e reajustado com **apoio livre da IA Autônoma Antigravity** conforme constava no teste (*"Aplicação de Inteligência Artificial livre com avaliação na estruturação"*) de forma organizada, embutida num pipeline de refatoramento seguro, criando middlewares contra bots falsos (`XSS/Honeypot`), corrigindo bugs da biblioteca Tailwind e desenhando fluxos seguros e modernos de Vue.
-
-.
+**Desenvolvido para o Teste Técnico - Desenvolvedor Sênior PHP/Laravel.**

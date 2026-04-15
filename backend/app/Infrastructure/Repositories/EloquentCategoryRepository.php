@@ -34,7 +34,8 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
      */
     public function findAll(): array
     {
-        return CategoryModel::orderBy('name')
+        return CategoryModel::withCount('tickets')
+            ->orderBy('name')
             ->get()
             ->map(fn(CategoryModel $model) => $this->toDomain($model))
             ->toArray();
@@ -126,6 +127,7 @@ class EloquentCategoryRepository implements CategoryRepositoryInterface
             createdAt: $model->created_at
                 ? \DateTimeImmutable::createFromMutable($model->created_at->toDateTime())
                 : null,
+            ticketsCount: (int) ($model->tickets_count ?? 0),
         );
     }
 }

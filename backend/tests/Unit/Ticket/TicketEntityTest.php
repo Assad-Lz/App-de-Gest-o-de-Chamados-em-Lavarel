@@ -42,6 +42,9 @@ class TicketEntityTest extends TestCase
             description: 'O servidor principal está inacessível.',
             categoryId: 1,
             createdBy: '127.0.0.1',
+            userName: 'Zacky',
+            userEmail: 'zacky@cellar.com',
+            department: 'TI',
         );
 
         // Assert – status inicial DEVE ser "aberto"

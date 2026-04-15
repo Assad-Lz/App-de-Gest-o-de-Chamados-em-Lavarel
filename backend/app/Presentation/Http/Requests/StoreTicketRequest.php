@@ -41,6 +41,10 @@ class StoreTicketRequest extends FormRequest
             // created_by: string
             'created_by'  => ['nullable', 'string', 'max:255'],
 
+            'user_name'   => ['required', 'string', 'max:255'],
+            'user_email'  => ['required', 'email', 'max:255'],
+            'department'  => ['required', 'string', 'max:255'],
+
             // Campos honeypot: devem estar ausentes/vazios
             'website'        => ['prohibited'],
             'telefone_extra' => ['prohibited'],

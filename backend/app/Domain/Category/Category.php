@@ -40,6 +40,7 @@ final class Category
         private string $name,
         private readonly string $createdBy,
         private readonly ?\DateTimeImmutable $createdAt = null,
+        private readonly int $ticketsCount = 0,
     ) {
         $this->validarNome($name);
     }
@@ -74,6 +75,14 @@ final class Category
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Retorna a contagem de tickets vinculados.
+     */
+    public function getTicketsCount(): int
+    {
+        return $this->ticketsCount;
     }
 
     /**

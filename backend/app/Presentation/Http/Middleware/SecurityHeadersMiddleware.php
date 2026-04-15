@@ -63,12 +63,12 @@ class SecurityHeadersMiddleware
         // Permite apenas conteúdo do próprio domínio e fontes explicitamente definidas
         $response->headers->set(
             'Content-Security-Policy',
-            "default-src 'self'; " .
-            "script-src 'self' 'unsafe-inline'; " .
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
-            "font-src 'self' https://fonts.gstatic.com; " .
-            "img-src 'self' data:; " .
-            "connect-src 'self';"
+            "default-src 'self' *; " .
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' *; " .
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com *; " .
+            "font-src 'self' https://fonts.gstatic.com *; " .
+            "img-src 'self' data: *; " .
+            "connect-src 'self' *;"
         );
 
         // Controla quais APIs do navegador podem ser usadas

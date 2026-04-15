@@ -28,8 +28,12 @@ class TicketResource extends JsonResource
             'status'        => $ticket->getStatus(),
             'category_id'   => $ticket->getCategoryId(),
             'created_by'    => $ticket->getCreatedBy(),
+            'user_name'     => $ticket->getUserName(),
+            'user_email'    => $ticket->getUserEmail(),
+            'department'    => $ticket->getDepartment(),
             'created_at'    => $ticket->getCreatedAt()?->format('Y-m-d\TH:i:s\Z'),
             'updated_at'    => $ticket->getUpdatedAt()?->format('Y-m-d\TH:i:s\Z'),
+            'comments'      => $ticket->getComments(),
         ];
     }
 }

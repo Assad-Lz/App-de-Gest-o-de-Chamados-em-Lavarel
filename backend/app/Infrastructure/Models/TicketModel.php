@@ -48,6 +48,9 @@ class TicketModel extends Model
         'status',
         'category_id',
         'created_by',
+        'user_name',
+        'user_email',
+        'department',
     ];
 
     protected $casts = [
@@ -77,5 +80,13 @@ class TicketModel extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(CategoryModel::class, 'category_id');
+    }
+
+    /**
+     * Relacionamento: Um ticket possui vários comentários (1:N).
+     */
+    public function comments(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(TicketCommentModel::class, 'ticket_id')->orderBy('created_at', 'asc');
     }
 }
