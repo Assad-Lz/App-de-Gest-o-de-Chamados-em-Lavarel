@@ -5,19 +5,19 @@ Sistema premium de gestão de chamados desenvolvido para a **Cellar Vinhos**, fo
 ## 🖼️ Visual do Projeto (Screenshots)
 
 ### 📊 Painel do Analista
-![Dashboard Analista](frontend/public/assets/images/dashboard_analista.png)
+![Dashboard Analista](./frontend/public/assets/images/dashboard_analista.png)
 
 ### 📋 Listagem e Gestão de Chamados
-![Gerenciamento de Chamados](frontend/public/assets/images/gerenciamento_chamados_lista.png)
+![Gerenciamento de Chamados](./frontend/public/assets/images/gerenciamento_chamados_lista.png)
 
 ### 💬 Comunicação e Follow-up (Messenger)
-![Follow-up System](frontend/public/assets/images/visao_geral_followup.png)
+![Follow-up System](./frontend/public/assets/images/visao_geral_followup.png)
 
 ### 📁 Gestão de Categorias
-![Categorias](frontend/public/assets/images/gerenciamento_categorias.png)
+![Categorias](./frontend/public/assets/images/gerenciamento_categorias.png)
 
 ### 🏠 Área do Cliente
-![Dashboard Cliente](frontend/public/assets/images/dashboard_cliente.png)
+![Dashboard Cliente](./frontend/public/assets/images/dashboard_cliente.png)
 
 ## 🚀 Funcionalidades Principais
 
