@@ -1,7 +1,5 @@
 # 🎫 Sistema de Gestão de Chamados
 
-[![CI – Testes Automatizados](https://github.com/SEU-USUARIO/gestao-chamados/actions/workflows/ci.yml/badge.svg)](https://github.com/SEU-USUARIO/gestao-chamados/actions)
-
 > Teste técnico para vaga de desenvolvedor PHP/Laravel.
 > Sistema de gestão de chamados (tickets) com CRUD completo, filtros reativos e arquitetura limpa.
 
