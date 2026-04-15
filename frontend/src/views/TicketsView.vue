@@ -151,13 +151,24 @@
 
           <form @submit.prevent="createTicket" class="space-y-5">
             <div>
+              <label class="block text-sm font-bold text-slate-700 mb-2">Seu E-mail <span class="text-red-500">*</span></label>
+              <input
+                v-model="form.email"
+                required
+                type="email"
+                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-orange/10 focus:border-cellar-orange outline-none transition-all font-medium text-slate-800"
+                placeholder="exemplo@cellarvinhos.com"
+              >
+            </div>
+
+            <div>
               <label class="block text-sm font-bold text-slate-700 mb-2">Assunto / Título do Problema <span class="text-red-500">*</span></label>
               <input
                 v-model="form.title"
                 required
                 type="text"
                 maxlength="255"
-                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium text-slate-800"
+                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-orange/10 focus:border-cellar-orange outline-none transition-all font-medium text-slate-800"
                 placeholder="Ex: Computador não liga, Impressora sem toner..."
               >
             </div>
@@ -167,7 +178,7 @@
               <select
                 v-model="form.category_id"
                 required
-                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium text-slate-700 cursor-pointer"
+                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-orange/10 focus:border-cellar-orange outline-none transition-all font-medium text-slate-700 cursor-pointer"
               >
                 <option value="" disabled>Selecione a categoria...</option>
                 <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
@@ -181,7 +192,7 @@
                 required
                 rows="4"
                 maxlength="5000"
-                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-medium text-slate-800 resize-none"
+                class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-4 focus:ring-cellar-orange/10 focus:border-cellar-orange outline-none transition-all font-medium text-slate-800 resize-none"
                 placeholder="Descreva o problema com o máximo de detalhes possível..."
               ></textarea>
               <p class="text-xs text-slate-400 mt-1 text-right">{{ form.description.length }}/5000</p>
@@ -198,7 +209,7 @@
               <button
                 type="submit"
                 :disabled="submitting"
-                class="flex-1 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                class="flex-1 py-3 bg-gradient-to-r from-cellar-orange to-orange-500 text-white rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none cellar-btn"
               >
                 <span v-if="submitting" class="flex items-center justify-center gap-2">
                   <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
@@ -392,7 +403,8 @@ const activeFilter = ref('todos')
 const form = ref({
   title: '',
   description: '',
-  category_id: ''
+  category_id: '',
+  email: userEmail || ''
 })
 
 const API_URL = 'http://localhost:8000/api/v1'
@@ -486,11 +498,11 @@ const createTicket = async () => {
     await axios.post(`${API_URL}/tickets`, {
       ...form.value,
       category_id: parseInt(form.value.category_id),
-      created_by: userEmail
+      created_by: form.value.email || userEmail
     })
     toast.success('Chamado aberto com sucesso! Nossa equipe irá analisar em breve. 🎉')
     showCreateModal.value = false
-    form.value = { title: '', description: '', category_id: '' }
+    form.value = { title: '', description: '', category_id: '', email: userEmail || '' }
     await fetchTickets()
   } catch (error) {
     const msg = error.response?.data?.message || 'Erro ao abrir chamado. Tente novamente.'
