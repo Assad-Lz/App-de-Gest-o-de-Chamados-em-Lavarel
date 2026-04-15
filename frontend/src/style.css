@@ -1,7 +1,18 @@
 @import "tailwindcss";
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
 body {
-  @apply bg-slate-50 text-slate-800 antialiased font-sans;
+  @apply bg-white text-cellar-dark antialiased font-sans;
 }
+
+.cellar-btn {
+  @apply font-semibold uppercase tracking-[0.04em] transition-all;
+}
+
+.cellar-container {
+  @apply max-w-cellar mx-auto px-6 sm:px-12 lg:px-[60px];
+}
+
+/* Montserrat Weights */
+h1, h2, h3 { @apply font-bold; }
+button { @apply font-medium; }
+body { @apply font-normal; }

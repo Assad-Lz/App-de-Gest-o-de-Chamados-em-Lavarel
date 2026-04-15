@@ -15,36 +15,34 @@ namespace App\Infrastructure\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 /**
  * Model Eloquent para a entidade Ticket (Chamado).
  *
  * @property int         $id
+ * @property string      $ticket_number
  * @property string      $title
  * @property string      $description
  * @property string      $status
  * @property int         $category_id
  * @property string      $created_by
  * @property \Carbon\Carbon $created_at
+ * @property \Carbon\Carbon|null $updated_at
  */
 class TicketModel extends Model
 {
     use HasFactory;
 
-    /**
-     * Nome da tabela no banco de dados.
-     */
     protected $table = 'tickets';
 
     /**
-     * Desabilita o campo updated_at pois a spec não o requer.
+     * Mantém o updated_at padrão do Eloquent (agora habilitado).
      */
-    public const UPDATED_AT = null;
+    public const UPDATED_AT = 'updated_at';
 
-    /**
-     * Campos permitidos para preenchimento em massa.
-     */
     protected $fillable = [
+        'ticket_number',
         'title',
         'description',
         'status',
@@ -52,13 +50,26 @@ class TicketModel extends Model
         'created_by',
     ];
 
-    /**
-     * Conversão automática de tipos.
-     */
     protected $casts = [
         'created_at'  => 'datetime',
+        'updated_at'  => 'datetime',
         'category_id' => 'integer',
     ];
+
+    /**
+     * Auto-gera ticket_number ao criar um novo ticket.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function (self $model) {
+            if (empty($model->ticket_number)) {
+                $year = now()->format('Y');
+                // Gera um número sequencial único baseado em timestamp + random
+                $seq  = str_pad((string)(now()->getTimestampMs() % 1000000), 6, '0', STR_PAD_LEFT);
+                $model->ticket_number = "TK-{$year}-{$seq}";
+            }
+        });
+    }
 
     /**
      * Relacionamento: Um ticket pertence a uma categoria (N:1).

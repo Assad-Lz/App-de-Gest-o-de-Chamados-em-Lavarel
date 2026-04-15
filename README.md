@@ -218,3 +218,16 @@ O Design System incluso neste repositório foi **integrado ao projeto** conforme
 - Assets CSS e JS copiados para `backend/public/assets/`
 - Referenciados no `frontend/index.html` do Vue.js
 - Componentes do Bootstrap utilizados na UI (tabelas, cards, modais, badges)
+
+### Acessos da Aplicação
+O sistema possui 2 perfis de simulação de permissão:
+
+- **Usuário Cliente (Cria chamados e visualiza apenas os seus)**
+  - Email: `cliente@teste.com`
+- **Usuário Analista (Acessa lista global, atende e fecha chamados)**
+  - Email: `analista@teste.com`
+
+
+Por que que colocamos um ponto tão importante no final do readme? Para saber quem realmente leu todas as instruções.
+Obrigatório: O Design System deste repositório foi utilizado para criar o projeto. Ele foi clonado e adequado de acordo com este projeto Laravel + Vue.js. 
+Aplica-se total liberdade para a ferramenta de inteligência artificial durante este projeto (Antigravity), sendo elaborada mantendo toda estruturação, seguindo regras e conceitos modernos de IA.

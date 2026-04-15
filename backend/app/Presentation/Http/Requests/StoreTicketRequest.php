@@ -38,8 +38,8 @@ class StoreTicketRequest extends FormRequest
             // category_id: deve existir na tabela categories (integridade referencial)
             'category_id' => ['required', 'integer', 'exists:categories,id'],
 
-            // status: NÃO deve ser enviado na criação (sempre será "aberto")
-            // Se enviado, será ignorado pelo caso de uso
+            // created_by: string
+            'created_by'  => ['nullable', 'string', 'max:255'],
 
             // Campos honeypot: devem estar ausentes/vazios
             'website'        => ['prohibited'],

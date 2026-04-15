@@ -4,14 +4,6 @@
  * -------------------------------------------------------
  * Rotas da API REST – Gestão de Chamados
  * -------------------------------------------------------
- * Todas as rotas seguem os princípios RESTful e passam
- * pelos middlewares de segurança definidos no Kernel.
- *
- * Middlewares aplicados globalmente via RouteServiceProvider:
- *   - api: throttle:api, SubstituteBindings
- *   - SecurityHeadersMiddleware: cabeçalhos HTTP seguros (Helmet)
- *   - XssProtectionMiddleware: sanitização contra XSS
- *   - HoneypotMiddleware: detecção e bloqueio de bots
  */
 
 use App\Presentation\Http\Controllers\CategoryController;
@@ -26,23 +18,24 @@ Route::prefix('v1')->middleware(['security.headers', 'xss.protection'])->group(f
 
     // -- Categorias --
     Route::prefix('categories')->group(function () {
-        Route::get('/', [CategoryController::class, 'index']);        // Listar todas as categorias
-        Route::post('/', [CategoryController::class, 'store']);       // Criar nova categoria
-        Route::put('/{id}', [CategoryController::class, 'update']);  // Atualizar categoria
-        Route::delete('/{id}', [CategoryController::class, 'destroy']); // Deletar categoria
+        Route::get('/', [CategoryController::class, 'index']);
+        Route::post('/', [CategoryController::class, 'store']);
+        Route::put('/{id}', [CategoryController::class, 'update']);
+        Route::delete('/{id}', [CategoryController::class, 'destroy']);
     });
 
     // -- Chamados (Tickets) --
     Route::prefix('tickets')->group(function () {
-        Route::get('/', [TicketController::class, 'index']);        // Listar chamados (com filtros)
-        Route::post('/', [TicketController::class, 'store']);       // Criar novo chamado
-        Route::put('/{id}', [TicketController::class, 'update']);  // Atualizar chamado
-        Route::delete('/{id}', [TicketController::class, 'destroy']); // Deletar chamado
+        Route::get('/', [TicketController::class, 'index']);           // Listar chamados (com filtros)
+        Route::post('/', [TicketController::class, 'store']);          // Criar novo chamado
+        Route::get('/{id}', [TicketController::class, 'show']);        // Buscar chamado individual
+        Route::put('/{id}', [TicketController::class, 'update']);      // Atualizar chamado
+        Route::delete('/{id}', [TicketController::class, 'destroy']);  // Deletar chamado (só TI)
     });
 });
 
 // -------------------------------------------------------
-// Rotas de compatibilidade (sem prefixo v1) – conforme spec
+// Rotas de compatibilidade (sem prefixo v1)
 // -------------------------------------------------------
 Route::middleware(['security.headers', 'xss.protection'])->group(function () {
 
@@ -56,6 +49,7 @@ Route::middleware(['security.headers', 'xss.protection'])->group(function () {
     Route::prefix('tickets')->group(function () {
         Route::get('/', [TicketController::class, 'index']);
         Route::post('/', [TicketController::class, 'store']);
+        Route::get('/{id}', [TicketController::class, 'show']);
         Route::put('/{id}', [TicketController::class, 'update']);
         Route::delete('/{id}', [TicketController::class, 'destroy']);
     });
@@ -65,20 +59,8 @@ Route::middleware(['security.headers', 'xss.protection'])->group(function () {
 // Rotas Honey Pot – Armadilhas para bots e scanners
 // -------------------------------------------------------
 Route::middleware(['honeypot.trap'])->group(function () {
-
-    // Armadilha 1: Rota falsa de login administrativo
-    Route::any('/admin/login', [HoneypotController::class, 'trap'])
-        ->name('honeypot.admin.login');
-
-    // Armadilha 2: Rota falsa de painel wp-admin (scanner WordPress)
-    Route::any('/wp-admin', [HoneypotController::class, 'trap'])
-        ->name('honeypot.wp.admin');
-
-    // Armadilha 3: Rota falsa de configuração
-    Route::any('/config/setup', [HoneypotController::class, 'trap'])
-        ->name('honeypot.config');
-
-    // Armadilha 4: Rota falsa de phpMyAdmin
-    Route::any('/phpmyadmin', [HoneypotController::class, 'trap'])
-        ->name('honeypot.phpmyadmin');
+    Route::any('/admin/login', [HoneypotController::class, 'trap'])->name('honeypot.admin.login');
+    Route::any('/wp-admin', [HoneypotController::class, 'trap'])->name('honeypot.wp.admin');
+    Route::any('/config/setup', [HoneypotController::class, 'trap'])->name('honeypot.config');
+    Route::any('/phpmyadmin', [HoneypotController::class, 'trap'])->name('honeypot.phpmyadmin');
 });

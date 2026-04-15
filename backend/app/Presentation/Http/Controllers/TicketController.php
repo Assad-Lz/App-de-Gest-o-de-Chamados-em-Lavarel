@@ -18,6 +18,7 @@ use App\Application\Ticket\UseCases\CreateTicketUseCase;
 use App\Application\Ticket\UseCases\DeleteTicketUseCase;
 use App\Application\Ticket\UseCases\ListTicketsUseCase;
 use App\Application\Ticket\UseCases\UpdateTicketUseCase;
+use App\Domain\Ticket\TicketRepositoryInterface;
 use App\Presentation\Http\Requests\StoreTicketRequest;
 use App\Presentation\Http\Requests\UpdateTicketRequest;
 use App\Presentation\Http\Resources\TicketResource;
@@ -29,36 +30,23 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Controller de Chamados (Tickets) – Gestão de Chamados.
- *
- * Suporta filtros por status e categoria na listagem.
  */
 class TicketController
 {
-    /**
-     * Injeta os Casos de Uso via construtor (DIP).
-     *
-     * @param  ListTicketsUseCase   $listUseCase
-     * @param  CreateTicketUseCase  $createUseCase
-     * @param  UpdateTicketUseCase  $updateUseCase
-     * @param  DeleteTicketUseCase  $deleteUseCase
-     */
     public function __construct(
         private readonly ListTicketsUseCase $listUseCase,
         private readonly CreateTicketUseCase $createUseCase,
         private readonly UpdateTicketUseCase $updateUseCase,
         private readonly DeleteTicketUseCase $deleteUseCase,
+        private readonly TicketRepositoryInterface $ticketRepository,
     ) {}
 
     /**
-     * GET /api/tickets?status=aberto&category_id=1
+     * GET /api/tickets
      * Retorna chamados com filtros opcionais por status e categoria.
-     *
-     * @param  Request  $request  Pode conter query params: status, category_id
-     * @return AnonymousResourceCollection
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        // Extrai os filtros dos query params (já sanitizados pelo XssMiddleware)
         $filtros = array_filter([
             'status'      => $request->query('status'),
             'category_id' => $request->query('category_id'),
@@ -70,11 +58,26 @@ class TicketController
     }
 
     /**
+     * GET /api/tickets/{id}
+     * Retorna um chamado específico pelo ID.
+     */
+    public function show(int $id): JsonResponse
+    {
+        $ticket = $this->ticketRepository->findById($id);
+
+        if ($ticket === null) {
+            return response()->json(
+                ['message' => "Chamado com ID {$id} não encontrado."],
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+        return (new TicketResource($ticket))->response();
+    }
+
+    /**
      * POST /api/tickets
      * Cria um novo chamado com status padrão "aberto".
-     *
-     * @param  StoreTicketRequest  $request  Dados validados
-     * @return JsonResponse Chamado criado (201) ou erro
      */
     public function store(StoreTicketRequest $request): JsonResponse
     {
@@ -83,7 +86,7 @@ class TicketController
                 title: $request->validated('title'),
                 description: $request->validated('description'),
                 categoryId: (int) $request->validated('category_id'),
-                createdBy: $request->ip() ?? 'sistema',
+                createdBy: $request->validated('created_by') ?? $request->ip() ?? 'sistema',
             );
 
             $ticket = $this->createUseCase->execute($dto);
@@ -103,10 +106,6 @@ class TicketController
     /**
      * PUT /api/tickets/{id}
      * Atualiza um chamado existente.
-     *
-     * @param  UpdateTicketRequest  $request  Dados validados
-     * @param  int                  $id       ID do chamado
-     * @return JsonResponse Chamado atualizado ou erro
      */
     public function update(UpdateTicketRequest $request, int $id): JsonResponse
     {
@@ -137,9 +136,7 @@ class TicketController
     /**
      * DELETE /api/tickets/{id}
      * Remove um chamado pelo ID.
-     *
-     * @param  int  $id  ID do chamado a ser removido
-     * @return JsonResponse Confirmação ou erro 404
+     * APENAS para usuários com papel TI/Admin (verificado no frontend).
      */
     public function destroy(int $id): JsonResponse
     {
