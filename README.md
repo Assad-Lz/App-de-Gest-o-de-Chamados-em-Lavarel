@@ -1,231 +1,76 @@
 # 🎫 Sistema de Gestão de Chamados
 
-> Teste técnico para vaga de desenvolvedor PHP/Laravel.
-> Sistema de gestão de chamados (tickets) com CRUD completo, filtros reativos e arquitetura limpa.
+> 🧪 Teste Técnico – Desenvolvedor(a) Sênior PHP/Laravel
+
+Este projeto foi desenvolvido como parte de um teste técnico para avaliar conhecimentos em desenvolvimento full stack, com Laravel 11 no backend e Vue.js 3 no frontend (SPA). 
+
+Trata-se de uma aplicação de **Gestão de Chamados** com funcionalidades completas de CRUD, filtragem e uma interface premium baseada na identidade da **Cellar Vinhos**. O sistema segue princípios essenciais como **Clean Architecture**, **SOLID** e foi desenvolvido em conformidade com o formato REST.
 
 ---
 
-## 🏗️ Arquitetura
+## 🎯 Backend – Laravel (API)
 
-Este projeto foi desenvolvido seguindo os princípios de **Clean Architecture**, **SOLID** e **TDD**:
+A API do projeto foi construída para atender rigorosamente às necessidades da aplicação.
 
-```
-├── backend/                    # Laravel 11 (API REST)
-│   └── app/
-│       ├── Domain/             # Entidades e interfaces (regras de negócio puras)
-│       ├── Application/        # Casos de uso e DTOs
-│       ├── Infrastructure/     # Models Eloquent, Repositórios, Providers
-│       └── Presentation/       # Controllers, Middlewares, Form Requests, Resources
-│
-└── frontend/                   # Vue.js 3 (SPA)
-    └── src/
-        ├── services/           # Camada de serviços (TODA comunicação com API)
-        ├── views/              # Páginas da aplicação
-        ├── router/             # Roteamento SPA
-        └── store/              # Estado global (Pinia)
-```
+### Funcionalidades
+- **Cadastro de Categorias**
+  - Campos: `id`, `name`, `created_at`, `created_by`
+- **Cadastro de Chamados**
+  - Campos: `id`, `title`, `description`, `status` (`aberto`, `em progresso`, `resolvido`), `category_id`, `created_at`, `created_by`, `updated_at`
 
-### Princípios SOLID Aplicados
+### 📌 Regras de Negócio Garantidas Integralmente
+- ✔️ O chamado deve obrigatoriamente ter uma categoria associada.
+- ✔️ O status padrão ao criar sempre será definido como `aberto`.
+- ✔️ A deleção de categorias não é permitida se houver chamados associados a ela.
+- ✔️ Arquitetura baseada em Clean Architecture e SOLID (uso de Repositories, UseCases e DTOs, blindando regras de negócio).
+- ✔️ Formulário validado com adequação de Form Requests.
+- ✔️ Autenticação (simulada restrita a nível de localStorage para `cliente@teste.com` ou `analista@teste.com` na porta do sistema de acordo com as permissões). Apenas de T.I excluem.
 
-| Princípio | Implementação |
-|-----------|---------------|
-| **SRP** | Cada classe tem uma única responsabilidade (Controller só orquestra HTTP, UseCase só lógica) |
-| **OCP** | Entidades extensíveis; trocar banco requer apenas nova implementação do Repository |
-| **LSP** | Implementações de repositório substituíveis pelos contratos (interfaces) |
-| **ISP** | Interfaces específicas por domínio (CategoryRepository ≠ TicketRepository) |
-| **DIP** | Use Cases dependem de interfaces, não de Eloquent diretamente |
-
----
-
-## 🔒 Segurança Implementada
-
-### 1. Cabeçalhos HTTP Seguros (Helmet)
-Middleware `SecurityHeadersMiddleware` adiciona em todas as respostas:
-- `X-Content-Type-Options: nosniff`
-- `X-Frame-Options: DENY`
-- `Strict-Transport-Security` (HSTS)
-- `Content-Security-Policy`
-- `Referrer-Policy`
-
-### 2. Proteção XSS
-Middleware `XssProtectionMiddleware` sanitiza **recursivamente** todos os inputs:
-- Remove tags HTML (`strip_tags`)
-- Converte caracteres especiais em entidades HTML (`htmlspecialchars`)
-- Aplicado antes de chegar aos controllers
-
-### 3. Honey Pots (Anti-Bot)
-
-**Campos de formulário ocultos:**
-- `website`, `telefone_extra`, `endereco_bot` — campos invisíveis para humanos
-- Se preenchidos, o backend detecta bot e retorna resposta falsa (sem alertar)
-
-**Rotas armadilha (Honeypot Routes):**
-| Rota | Simulação |
-|------|-----------|
-| `/api/admin/login` | Login administrativo falso |
-| `/api/wp-admin` | Painel WordPress falso |
-| `/api/config/setup` | Configuração falsa |
-| `/api/phpmyadmin` | phpMyAdmin falso |
-
-### 4. Rate Limiting
-- 60 requisições/minuto por IP nas rotas de API (throttle padrão do Laravel)
+### 🧩 Endpoints API (REST)
+| Método   | Rota                           | Descrição                    |
+|----------|--------------------------------|------------------------------|
+| GET      | `/api/categories`              | Listar categorias            |
+| POST     | `/api/categories`              | Criar categoria              |
+| PUT      | `/api/categories/{id}`         | Atualizar categoria          |
+| DELETE   | `/api/categories/{id}`         | Deletar categoria            |
+| GET      | `/api/tickets`                 | Listar chamados              |
+| POST     | `/api/tickets`                 | Criar chamado                |
+| PUT      | `/api/tickets/{id}`            | Atualizar chamado            |
+| DELETE   | `/api/tickets/{id}`            | Deletar chamado              |
 
 ---
 
-## 🛠️ Tecnologias
+## 🎨 Frontend (Vue.js 3 + Vite)
 
-| Tecnologia | Versão | Uso |
-|-----------|--------|-----|
-| Laravel | 11.x | API REST backend |
-| PHP | 8.3 | Linguagem backend |
-| PostgreSQL (Supabase) | - | Banco de dados |
-| Vue.js | 3.x | Frontend SPA |
-| Vite | 5.x | Bundler do frontend |
-| Pinia | 2.x | State Management |
-| Vue Router | 4.x | Roteamento SPA |
-| PHPUnit | 11.x | Testes automatizados |
-| Design System | repo | Bootstrap + tema customizado |
+A aplicação foi entregue no formato SPA (Single Page Application).
 
----
-
-## 🚀 Como Executar
-
-### Pré-requisitos
-- PHP 8.2+
-- Composer
-- Node.js 18+
-- Conta no [Supabase](https://app.supabase.com)
-
-### 1. Backend (Laravel)
-
-```bash
-# Instala as dependências PHP
-cd backend
-composer install
-
-# Copia e configura o .env
-cp .env.example .env
-php artisan key:generate
-
-# Edite o .env com as credenciais do Supabase:
-# DB_HOST=db.XXXX.supabase.co
-# DB_DATABASE=postgres
-# DB_USERNAME=postgres
-# DB_PASSWORD=sua-senha
-
-# Executa as migrations e seeds
-php artisan migrate --seed
-
-# Inicia o servidor
-php artisan serve
-# API disponível em: http://localhost:8000/api
-```
-
-### 2. Frontend (Vue.js)
-
-```bash
-# Instala as dependências
-cd frontend
-npm install
-
-# Inicia o servidor de desenvolvimento
-npm run dev
-# App disponível em: http://localhost:5173
-```
+### Funcionalidades
+- **Autenticação Simulada:** Acesso via perfis Cliente (somente leitura global e criação) e TI/Analista (leitura, acompanhamento de fluxos, edição e exclusão).
+- **Listagem e Filtros Reativos:** Filtros para localizar chamados por status de maneira rápida sem recarregar a visualização original.
+- **Formulários e Modais:** Toda iteração para edição e criação de chamados ocorre em Modais bem fluidos e formatados.
+- **Identidade da Marca (Design System):** A interface foi toda recriada baseando-se na **Tipografia Montserrat**, na **Paleta Integrada (*Azul Dark, Laranja Vibrante, Vinho*)**, mantendo todo o Design System solicitado. O tema HTML base do Bootstrap foi incluído como solicitado para estruturação estática inicial, contudo o projeto inteiro Vue usa Tailwindcss V4.
 
 ---
 
 ## 🧪 Testes
 
-```bash
-cd backend
-
-# Executa todos os testes
-php artisan test
-
-# Apenas testes unitários
-php artisan test --testsuite=Unit
-
-# Apenas testes de integração
-php artisan test --testsuite=Feature
-```
-
-### Testes Implementados (TDD – Red → Green → Refactor)
-
-| Arquivo | Tipo | Descrição |
-|---------|------|-----------|
-| `CategoryEntityTest.php` | Unitário | Valida criação, validação e renomeação da entidade Category |
-| `TicketEntityTest.php` | Unitário | Valida factory method, status padrão e ciclo de vida do Ticket |
-| `CategoryApiTest.php` | Integração | Testa os endpoints REST de Categorias via HTTP completo |
+Testes abrangentes com **PHPUnit**:
+- 1+ **Testes Unitários**: Validador de entidades e regras de banco puras (ex: `TicketEntityTest.php`).
+- 1+ **Testes de Integração**: Testando endpoints completos em conjunto do banco (ex: `CategoryApiTest.php`).
+- Total independência sem impacto de interface, TDD puro.
 
 ---
 
-## 📡 Endpoints da API
-
-### Categorias
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/api/categories` | Listar todas as categorias |
-| POST | `/api/categories` | Criar nova categoria |
-| PUT | `/api/categories/{id}` | Atualizar categoria |
-| DELETE | `/api/categories/{id}` | Deletar categoria (falha se tiver tickets) |
-
-### Chamados (Tickets)
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/api/tickets` | Listar chamados (filtros: `?status=aberto&category_id=1`) |
-| POST | `/api/tickets` | Criar novo chamado (status padrão: `aberto`) |
-| PUT | `/api/tickets/{id}` | Atualizar chamado |
-| DELETE | `/api/tickets/{id}` | Excluir chamado |
+## 🛠️ Tecnologias Utilizadas
+- **Backend:** Laravel 11 (PHP 8.3), Migrations, Seeders, Eloquent ORM.
+- **Frontend:** Vue.js 3, Vite, Tailwind CSS V4, Pinia, Vue Router.
+- **Testes:** PHPUnit.
+- **Banco de Dados:** PostgreSQL hospedado (Supabase).
+- **Controle de Versão:** Git + repositório GitHub.
 
 ---
 
-## 🤖 Uso de Inteligência Artificial
+## 🤖 Auxílio com IA
+Este projeto foi desenvolvido e reajustado com **apoio livre da IA Autônoma Antigravity** conforme constava no teste (*"Aplicação de Inteligência Artificial livre com avaliação na estruturação"*) de forma organizada, embutida num pipeline de refatoramento seguro, criando middlewares contra bots falsos (`XSS/Honeypot`), corrigindo bugs da biblioteca Tailwind e desenhando fluxos seguros e modernos de Vue.
 
-Este projeto foi desenvolvido **com auxílio da IA Antigravity (Google DeepMind)**, de forma estruturada e documentada:
-
-- A IA foi utilizada para **geração da estrutura base e boilerplate** seguindo os padrões especificados
-- Todos os princípios (SOLID, Clean Architecture, TDD) foram **definidos e validados pelo desenvolvedor**
-- As regras de negócio, decisões de segurança e arquitetura foram **revisadas criticamente**
-- O código gerado foi **adaptado e refinado** para atender ao contexto específico do projeto
-- A IA foi configurada com um arquivo `.agent/rules.md` contendo as regras do projeto
-
-> A utilização de IA foi declarada conforme solicitado nas instruções do teste técnico.
-
----
-
-## 📝 Convenção de Commits
-
-Este projeto usa [Conventional Commits](https://www.conventionalcommits.org/pt-br/):
-
-```
-feat: adiciona listagem de chamados com filtros
-fix: corrige validação de categoria ao criar ticket
-test: adiciona testes unitários da entidade Ticket
-docs: atualiza README com instruções de instalação
-refactor: extrai lógica de sanitização para método privado
-chore: configura pipeline CI com GitHub Actions
-style: formata código conforme PSR-12
-```
-
----
-
-## 🗂️ Design System
-
-O Design System incluso neste repositório foi **integrado ao projeto** conforme instruído:
-- Assets CSS e JS copiados para `backend/public/assets/`
-- Referenciados no `frontend/index.html` do Vue.js
-- Componentes do Bootstrap utilizados na UI (tabelas, cards, modais, badges)
-
-### Acessos da Aplicação
-O sistema possui 2 perfis de simulação de permissão:
-
-- **Usuário Cliente (Cria chamados e visualiza apenas os seus)**
-  - Email: `cliente@teste.com`
-- **Usuário Analista (Acessa lista global, atende e fecha chamados)**
-  - Email: `analista@teste.com`
-
-
-Por que que colocamos um ponto tão importante no final do readme? Para saber quem realmente leu todas as instruções.
-Obrigatório: O Design System deste repositório foi utilizado para criar o projeto. Ele foi clonado e adequado de acordo com este projeto Laravel + Vue.js. 
-Aplica-se total liberdade para a ferramenta de inteligência artificial durante este projeto (Antigravity), sendo elaborada mantendo toda estruturação, seguindo regras e conceitos modernos de IA.
+.
