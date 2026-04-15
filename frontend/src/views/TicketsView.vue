@@ -503,6 +503,13 @@
       </div>
     </Transition>
 
+    <ConfirmModal 
+      :show="showConfirm" 
+      :title="confirmData.title" 
+      :message="confirmData.message"
+      @confirm="() => { confirmData.onConfirm(); showConfirm = false; }"
+      @cancel="showConfirm = false"
+    />
   </div>
 </template>
 
@@ -511,6 +518,7 @@ import { ref, onMounted, computed, defineComponent, h } from 'vue'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router'
+import ConfirmModal from '../components/ConfirmModal.vue'
 
 const toast = useToast()
 const router = useRouter()
@@ -530,6 +538,8 @@ const activeFilter = ref('todos')
 const searchQuery = ref('')
 const newComment = ref('')
 const submittingComment = ref(false)
+const showConfirm = ref(false)
+const confirmData = ref({ title: '', message: '', onConfirm: null })
 
 const form = ref({
   title: '',
@@ -562,8 +572,9 @@ const isStatusAfter = (current, step) => statusOrder.indexOf(current) > statusOr
 
 // ── Dados filtrados ────────────────────────────────────────
 const myTickets = computed(() => {
-  if (userRole.value === 'analista') return tickets.value
-  return tickets.value.filter(t => t.created_by === userEmail.value)
+  // Conforme solicitado, o e-mail padrão logado deve visualizar todos os chamados
+  // idependente do e-mail de contato inserido no formulário.
+  return tickets.value
 })
 
 const filteredTickets = computed(() => {
@@ -661,11 +672,12 @@ const createTicket = async () => {
     await axios.post(`${API_URL}/tickets`, {
       ...form.value,
       category_id: parseInt(form.value.category_id),
-      created_by: form.value.user_email || userEmail.value
+      created_by: userEmail.value, // Sempre o e-mail do login para identificar o dono
+      user_email: form.value.user_email || userEmail.value // E-mail para contato (analista vê este)
     })
     toast.success('Chamado aberto com sucesso! Nossa equipe irá analisar em breve. 🎉')
     showCreateModal.value = false
-    form.value = { title: '', description: '', category_id: '', user_name: '', user_email: userEmail || '', department: '' }
+    form.value = { title: '', description: '', category_id: '', user_name: '', user_email: userEmail.value || '', department: '' }
     await fetchTickets()
   } catch (error) {
     const msg = error.response?.data?.message || 'Erro ao abrir chamado. Tente novamente.'
@@ -695,17 +707,21 @@ const updateTicketInfo = async () => {
   }
 }
 
-const deleteTicket = async (id) => {
-  if (!confirm('Tem certeza que deseja excluir este chamado permanentemente?')) return
-
-  try {
-    await axios.delete(`${API_URL}/tickets/${id}`)
-    toast.success('Chamado excluído com sucesso!')
-    await fetchTickets()
-  } catch (error) {
-    const msg = error.response?.data?.message || 'Erro ao excluir chamado.'
-    toast.error(msg)
+const deleteTicket = (id) => {
+  confirmData.value = {
+    title: 'Excluir Chamado?',
+    message: 'Esta ação irá remover permanentemente o chamado do sistema. Deseja prosseguir?',
+    onConfirm: async () => {
+      try {
+        await axios.delete(`${API_URL}/tickets/${id}`)
+        toast.success('Chamado removido com sucesso.')
+        await fetchTickets()
+      } catch {
+        toast.error('Erro ao remover chamado.')
+      }
+    }
   }
+  showConfirm.value = true
 }
 
 const addComment = async () => {
@@ -730,18 +746,23 @@ const addComment = async () => {
   }
 }
 
-const bulkDelete = async () => {
-  if (!confirm(`Tem certeza que deseja excluir ${selectedTickets.value.length} chamados permanentemente?`)) return
-
-  try {
-    await axios.post(`${API_URL}/tickets/bulk-delete`, { ids: selectedTickets.value })
-    toast.success('Chamados excluídos com sucesso!')
-    selectedTickets.value = []
-    await fetchTickets()
-  } catch (error) {
-    const msg = error.response?.data?.message || 'Erro ao excluir chamados.'
-    toast.error(msg)
+const bulkDelete = () => {
+  if (selectedTickets.value.length === 0) return
+  confirmData.value = {
+    title: 'Excluir Selecionados?',
+    message: `Você está prestes a excluir ${selectedTickets.value.length} chamados simultaneamente. Esta ação é irreversível.`,
+    onConfirm: async () => {
+      try {
+        await axios.post(`${API_URL}/tickets/bulk-delete`, { ids: selectedTickets.value })
+        toast.success(`${selectedTickets.value.length} chamados removidos com sucesso.`)
+        selectedTickets.value = []
+        await fetchTickets()
+      } catch {
+        toast.error('Erro ao processar exclusão em massa.')
+      }
+    }
   }
+  showConfirm.value = true
 }
 
 // ── Modals ─────────────────────────────────────────────────

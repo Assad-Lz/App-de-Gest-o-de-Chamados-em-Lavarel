@@ -82,6 +82,14 @@
         </div>
       </div>
     </Transition>
+
+    <ConfirmModal 
+      :show="showConfirm" 
+      :title="confirmData.title" 
+      :message="confirmData.message"
+      @confirm="() => { confirmData.onConfirm(); showConfirm = false; }"
+      @cancel="showConfirm = false"
+    />
   </div>
 </template>
 
@@ -89,6 +97,7 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useToast } from 'vue-toastification'
+import ConfirmModal from '../components/ConfirmModal.vue'
 
 const toast = useToast()
 const userRole = ref(localStorage.getItem('userRole'))
@@ -97,6 +106,8 @@ const loading = ref(true)
 const showCreateModal = ref(false)
 const submitting = ref(false)
 const newName = ref('')
+const showConfirm = ref(false)
+const confirmData = ref({ title: '', message: '', onConfirm: null })
 
 const API_URL = 'http://localhost:8000/api/v1/categories'
 
@@ -127,16 +138,21 @@ const createCategory = async () => {
   }
 }
 
-const deleteCategory = async (id) => {
-  if (!confirm('Tem certeza que deseja remover esta categoria?')) return
-  
-  try {
-    await axios.delete(`${API_URL}/${id}`)
-    toast.success('Categoria removida!')
-    await fetchCategories()
-  } catch (error) {
-    toast.error(error.response?.data?.message || 'Não foi possível remover.')
+const deleteCategory = (id) => {
+  confirmData.value = {
+    title: 'Excluir Categoria?',
+    message: 'Esta cataegoria será removida permanentemente. Deseja prosseguir?',
+    onConfirm: async () => {
+      try {
+        await axios.delete(`${API_URL}/${id}`)
+        toast.success('Categoria removida com sucesso!')
+        await fetchCategories()
+      } catch (error) {
+        toast.error(error.response?.data?.message || 'Não foi possível remover a categoria.')
+      }
+    }
   }
+  showConfirm.value = true
 }
 
 onMounted(fetchCategories)

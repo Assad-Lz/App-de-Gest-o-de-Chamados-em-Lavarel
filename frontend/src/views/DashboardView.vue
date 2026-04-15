@@ -74,7 +74,7 @@
           <div class="absolute -right-6 -top-6 w-32 h-32 bg-cellar-navy/5 rounded-full opacity-0 group-hover:opacity-100 group-hover:scale-150 transition-all duration-700"></div>
           <div class="flex items-center gap-2 z-10 mb-3">
             <div class="w-10 h-10 bg-cellar-navy/10 rounded-xl flex items-center justify-center group-hover:bg-cellar-navy group-hover:text-white transition-colors">
-              <svg class="w-5 h-5 text-cellar-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+              <svg class="w-5 h-5 text-cellar-navy group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
             </div>
             <p class="text-sm font-semibold text-cellar-gray uppercase tracking-wider">Total de Chamados</p>
           </div>
@@ -89,7 +89,7 @@
           <div class="absolute -right-6 -top-6 w-32 h-32 bg-cellar-orange/5 rounded-full opacity-0 group-hover:opacity-100 group-hover:scale-150 transition-all duration-700"></div>
           <div class="flex items-center gap-2 z-10 mb-3">
             <div class="w-10 h-10 bg-cellar-orange/10 rounded-xl flex items-center justify-center group-hover:bg-cellar-orange group-hover:text-white transition-colors">
-              <svg class="w-5 h-5 text-cellar-orange" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <svg class="w-5 h-5 text-cellar-orange group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <p class="text-sm font-semibold text-cellar-gray uppercase tracking-wider">Aguardando</p>
           </div>
@@ -119,7 +119,7 @@
           <div class="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
           <div class="flex items-center gap-2 z-10 mb-3">
             <div class="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center group-hover:bg-white group-hover:text-cellar-wine transition-colors">
-              <svg class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <svg class="w-5 h-5 text-white group-hover:text-cellar-wine transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
             </div>
             <p class="text-sm font-semibold opacity-90 uppercase tracking-wider">Finalizados</p>
           </div>
@@ -200,8 +200,7 @@ const loading = ref(true)
 const API_URL = 'http://localhost:8000/api/v1'
 
 const myTickets = computed(() => {
-  if (userRole.value === 'analista') return tickets.value
-  return tickets.value.filter(t => t.created_by === userEmail.value)
+  return tickets.value
 })
 
 const stats = computed(() => ({
