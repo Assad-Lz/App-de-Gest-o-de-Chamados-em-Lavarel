@@ -26,6 +26,18 @@ const routes = [
     meta: { title: 'Categorias – Gestão de Chamados', requiresAuth: true },
   },
   {
+    path: '/privacidade',
+    name: 'privacy',
+    component: () => import('@/views/PrivacyPolicyView.vue'),
+    meta: { title: 'Privacidade – Gestão de Chamados', requiresAuth: true },
+  },
+  {
+    path: '/termos',
+    name: 'terms',
+    component: () => import('@/views/TermsOfUseView.vue'),
+    meta: { title: 'Termos de Uso – Gestão de Chamados', requiresAuth: true },
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: '/',
   },

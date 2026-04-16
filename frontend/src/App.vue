@@ -26,6 +26,22 @@
         </transition>
       </router-view>
     </main>
+
+    <!-- Footer Global -->
+    <footer class="bg-white border-t border-slate-100 py-8 mt-auto">
+      <div class="cellar-container">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+          <div class="text-cellar-gray text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
+            © 2026 Cellar Vinhos · Gestão Integrada
+          </div>
+          <div class="flex items-center gap-6">
+            <router-link to="/privacidade" class="text-cellar-gray hover:text-cellar-navy text-xs font-bold uppercase tracking-widest transition-colors">Privacidade</router-link>
+            <router-link to="/termos" class="text-cellar-gray hover:text-cellar-navy text-xs font-bold uppercase tracking-widest transition-colors">Termos</router-link>
+            <a v-if="!isLoginRoute" href="/backend/openapi.yml" target="_blank" class="text-cellar-gray hover:text-cellar-orange text-xs font-bold uppercase tracking-widest transition-colors">Docs API</a>
+          </div>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
 
