@@ -146,3 +146,7 @@ Este projeto está licenciado sob a licença **Creative Commons Attribution-NonC
 - **Uso Permitido:** Apenas para fins educacionais, estudos e demonstração de portfólio.
 - **Proibido:** Uso comercial ou qualquer atividade com fins lucrativos utilizando este código.
 - **Alterações:** Permitidas, desde que mantida a mesma licença e atribuído o crédito original.
+
+---
+
+[Política de Privacidade](./PRIVACY.md) | [Termos de Uso](./TERMS.md) | [Segurança](./SECURITY.md)
