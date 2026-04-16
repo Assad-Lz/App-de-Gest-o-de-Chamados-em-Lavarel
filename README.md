@@ -96,3 +96,11 @@ Este projeto foi desenvolvido utilizando a **IDE Antigravity**, integrando capac
 
 ---
 **Desenvolvido para o Teste Técnico - Desenvolvedor Sênior PHP/Laravel.**
+
+## 📄 Licença
+
+Este projeto está licenciado sob a licença **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)**.
+
+- **Uso Permitido:** Apenas para fins educacionais, estudos e demonstração de portfólio.
+- **Proibido:** Uso comercial ou qualquer atividade com fins lucrativos utilizando este código.
+- **Alterações:** Permitidas, desde que mantida a mesma licença e atribuído o crédito original.
