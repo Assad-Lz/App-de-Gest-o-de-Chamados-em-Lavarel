@@ -37,7 +37,7 @@
           <div class="flex items-center gap-6">
             <router-link to="/privacidade" class="text-cellar-gray hover:text-cellar-navy text-xs font-bold uppercase tracking-widest transition-colors">Privacidade</router-link>
             <router-link to="/termos" class="text-cellar-gray hover:text-cellar-navy text-xs font-bold uppercase tracking-widest transition-colors">Termos</router-link>
-            <a v-if="!isLoginRoute" href="/backend/openapi.yml" target="_blank" class="text-cellar-gray hover:text-cellar-orange text-xs font-bold uppercase tracking-widest transition-colors">Docs API</a>
+            <a v-if="!isLoginRoute" href="https://editor.swagger.io/?url=https://raw.githubusercontent.com/Assad-Lz/App-de-Gest-o-de-Chamados-em-Lavarel/main/backend/openapi.yml" target="_blank" class="text-cellar-gray hover:text-cellar-orange text-xs font-bold uppercase tracking-widest transition-colors">Docs API</a>
           </div>
         </div>
       </div>
