@@ -38,7 +38,7 @@ Sistema premium de gestão de chamados desenvolvido para a **Cellar Vinhos**, fo
 - **Backend:** Laravel 11 + Clean Architecture + PostgreSQL (Supabase).
 - **Frontend:** Vue.js 3 + Vite + Tailwind CSS (Aesthetics v4).
 - **Icons & Design:** Lucide Icons + HeroIcons + Custom Glassmorphism UI.
-- **Docs:** OpenAPI/Swagger (disponível em `/backend/openapi.yml`).
+- **Docs:** [OpenAPI/Swagger Interactive](https://editor.swagger.io/?url=https://raw.githubusercontent.com/Assad-Lz/App-de-Gest-o-de-Chamados-em-Lavarel/main/backend/openapi.yml) (disponível também em `/backend/openapi.yml`).
 
 ## 📦 Instalação e Execução
 
