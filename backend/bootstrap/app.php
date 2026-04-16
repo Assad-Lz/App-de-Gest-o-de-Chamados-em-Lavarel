@@ -9,6 +9,7 @@
  */
 
 use App\Infrastructure\Providers\RepositoryServiceProvider;
+use App\Presentation\Http\Middleware\BackendObfuscationMiddleware;
 use App\Presentation\Http\Middleware\HoneypotMiddleware;
 use App\Presentation\Http\Middleware\HoneypotTrapMiddleware;
 use App\Presentation\Http\Middleware\SecurityHeadersMiddleware;
@@ -32,8 +33,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Middlewares globais da API (aplicados em TODAS as requisições)
         // ────────────────────────────────────────────────
         $middleware->api(prepend: [
-            SecurityHeadersMiddleware::class, // Cabeçalhos HTTP seguros (Helmet)
-            XssProtectionMiddleware::class,   // Sanitização contra XSS
+            BackendObfuscationMiddleware::class, // Ocultar backend de scanners
+            SecurityHeadersMiddleware::class,   // Cabeçalhos HTTP seguros (Helmet)
+            XssProtectionMiddleware::class,     // Sanitização contra XSS
         ]);
 
         // ────────────────────────────────────────────────
@@ -44,6 +46,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'xss.protection'   => XssProtectionMiddleware::class,
             'honeypot'         => HoneypotMiddleware::class,
             'honeypot.trap'    => HoneypotTrapMiddleware::class,
+            'obfuscation'      => BackendObfuscationMiddleware::class,
         ]);
 
     })

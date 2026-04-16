@@ -19,6 +19,17 @@ Sistema premium de gestão de chamados desenvolvido para a **Cellar Vinhos**, fo
 ### 🏠 Área do Cliente
 ![Dashboard Cliente](./frontend/public/assets/images/dashboard_cliente.png)
 
+## 🛡️ Segurança de Elite (Hardening Executado)
+
+O sistema foi endurecido contra ataques comuns e tentativas de reconhecimento:
+- **Backend Obfuscation:** Bloqueio de scanners de vulnerabilidades (Nmap, Nuclei) e restrição de acesso por Host.
+- **Proteção Ativa contra XSS:** Middleware recursivo de sanitização em todas as entradas de dados.
+- **API Stealth Mode:** Remoção de cabeçalhos tecnológicos (`X-Powered-By`, `Server`) e fallback silencioso para rotas inexistentes.
+- **Honeypots Integrados:** Armadilhas configuradas em rotas comuns de ataque (`wp-admin`, `phpmyadmin`) para identificação de bots.
+- **Security Headers (Helmet-style):** CSP estrita, HSTS, X-Frame-Options e Permissions-Policy configurados.
+- **Testes de Segurança:** Suíte de testes automatizados com PHPUnit validando cada camada de proteção.
+
+
 ## 🚀 Funcionalidades Principais
 
 ### Para o Analista (T.I)

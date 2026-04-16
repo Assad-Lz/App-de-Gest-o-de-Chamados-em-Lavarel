@@ -63,18 +63,18 @@ class SecurityHeadersMiddleware
         // Permite apenas conteúdo do próprio domínio e fontes explicitamente definidas
         $response->headers->set(
             'Content-Security-Policy',
-            "default-src 'self' *; " .
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' *; " .
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com *; " .
-            "font-src 'self' https://fonts.gstatic.com *; " .
-            "img-src 'self' data: *; " .
-            "connect-src 'self' *;"
+            "default-src 'self'; " .
+            "script-src 'self' 'unsafe-inline'; " . // Note: 'unsafe-inline' is needed for some Vue/Vite behaviors in dev
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " .
+            "font-src 'self' https://fonts.gstatic.com; " .
+            "img-src 'self' data: https://*.supabase.co; " . // Allowing Supabase for images if needed
+            "connect-src 'self' *.supabase.co;"
         );
 
         // Controla quais APIs do navegador podem ser usadas
         $response->headers->set(
             'Permissions-Policy',
-            'camera=(), microphone=(), geolocation=(), payment=()'
+            'camera=(), microphone=(), geolocation=(), payment=(), usb=(), vr=()'
         );
 
         // Desabilita o filtro XSS embutido antigo de browsers (obsoleto, mas defensivo)
@@ -82,7 +82,7 @@ class SecurityHeadersMiddleware
 
         // Remove o cabeçalho padrão que expõe a tecnologia usada
         $response->headers->remove('X-Powered-By');
-        $response->headers->set('X-Powered-By', 'GestChamados/1.0');
+        $response->headers->remove('Server');
 
         return $response;
     }

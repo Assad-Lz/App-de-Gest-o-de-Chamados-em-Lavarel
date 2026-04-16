@@ -69,3 +69,8 @@ Route::middleware(['honeypot.trap'])->group(function () {
     Route::any('/config/setup', [HoneypotController::class, 'trap'])->name('honeypot.config');
     Route::any('/phpmyadmin', [HoneypotController::class, 'trap'])->name('honeypot.phpmyadmin');
 });
+
+// -------------------------------------------------------
+// Rota de Escape – Oculta a estrutura do servidor
+// -------------------------------------------------------
+Route::fallback(fn() => response()->json(['message' => 'Resource not available'], 404));
