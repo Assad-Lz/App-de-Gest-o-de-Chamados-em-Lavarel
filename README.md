@@ -53,20 +53,62 @@ O sistema foi endurecido contra ataques comuns e tentativas de reconhecimento:
 
 ## 📦 Instalação e Execução
 
-### 1. Backend
+### 📋 Pré-requisitos
+Antes de começar, você precisará ter instalado em sua máquina:
+- **PHP 8.3+** e extensões (mbstring, xml, curl, pgsql, zip).
+- **Composer** (Gerenciador de pacotes PHP).
+- **Node.js 20+** e **npm**.
+- **PostgreSQL** (ou conta no Supabase para banco remoto).
+
+### 🚀 Passo a Passo
+
+#### 0. Clonar o Repositório
+Escolha um diretório em sua máquina e execute:
 ```bash
-cd backend
-composer install
-cp .env.example .env
-php artisan migrate
-php artisan serve
+git clone https://github.com/Assad-Lz/App-de-Gest-o-de-Chamados-em-Lavarel.git
+cd App-de-Gest-o-de-Chamados-em-Lavarel
 ```
 
-### 2. Frontend
+#### 1. Configurar o Backend (Laravel)
+```bash
+cd backend
+
+# Instalar dependências
+composer install
+
+# Configurar ambiente
+cp .env.example .env
+php artisan key:generate
+
+# ⚠️ Configure suas credenciais de banco de dados no arquivo .env
+# (DB_HOST, DB_DATABASE, DB_USERNAME, DB_PASSWORD)
+
+# Rodar as migrações e seeds (dados iniciais)
+php artisan migrate --seed
+
+# Iniciar o servidor
+php artisan serve
+```
+A API estará rodando em: `http://localhost:8000`
+
+#### 2. Configurar o Frontend (Vue.js)
+Abra um novo terminal na raiz do projeto:
 ```bash
 cd frontend
+
+# Instalar dependências
 npm install
+
+# Iniciar o servidor de desenvolvimento
 npm run dev
+```
+O Frontend estará disponível em: `http://localhost:5173`
+
+#### 3. Executar Testes de Segurança
+Para garantir que as proteções de Hardening estão ativas:
+```bash
+cd backend
+php artisan test tests/Feature/Security/SecurityTest.php
 ```
 
 ## 📐 Decisões de Arquitetura (Clean Architecture)
